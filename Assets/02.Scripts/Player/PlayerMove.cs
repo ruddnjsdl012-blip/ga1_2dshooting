@@ -47,10 +47,19 @@ public class PlayerMove : MonoBehaviour
              // 새로운 위치 = 현재 위치 + (방향 * 속력 * 시간)
              // transform.position += (Vector3)direction * Speed * Time.deltaTime;
              
-             float posX = Mathf.Clamp(transform.position.x, MinX, MaxX);
+             float posX = transform.position.x;
              float posY = Mathf.Clamp(transform.position.y, MinY, MaxY);
-        
-             transform.position = new Vector2(posX, posY);
+
+             if (posX > MaxX)
+             {
+                 posX = MinX;
+             }
+             else if (posX < MinX)
+             {
+                 posX = MaxX;
+             }
+
+             transform.position = new Vector3(posX, posY, transform.position.z);
              
              
          }
