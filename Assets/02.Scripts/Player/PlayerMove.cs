@@ -19,6 +19,7 @@ public class PlayerMove : MonoBehaviour
         Move();
         
         SpeedChange();
+        
     }
 
     private void SpeedChange()
