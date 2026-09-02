@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerShoot : MonoBehaviour
+public class BulletCoolTime : MonoBehaviour
 {
     public GameObject BulletPrefab;
     public Transform FirePoint;
