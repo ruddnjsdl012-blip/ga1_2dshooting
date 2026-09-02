@@ -61,6 +61,19 @@ public class PlayerMove : MonoBehaviour
 
              transform.position = new Vector3(posX, posY, transform.position.z);
              
+             // E = 속도 증가
+             if (Input.GetKeyDown(KeyCode.E))
+             {
+                 Speed += 1f;
+             }
+
+             // Q = 속도 감소
+             if (Input.GetKeyDown(KeyCode.Q))
+             {
+                 Speed = Mathf.Max(0f, Speed - 1f);
+             }
+
+             
              
          }
     }
