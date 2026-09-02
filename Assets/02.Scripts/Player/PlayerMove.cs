@@ -7,6 +7,11 @@ public class PlayerMove : MonoBehaviour
      // 필요 필드 :
      public float Speed;
      
+     public float MinX = -2.4f;
+     public float MaxX = 2.4f;
+     public float MinY = -4.7f;
+     public float MaxY = 0f;
+     
      
      // 매 프레임마다 실행된다.
      // 초당 프레임 실행 횟수는 : 별다른 설정이 없을 경우 가능한 많이 
@@ -41,6 +46,11 @@ public class PlayerMove : MonoBehaviour
              
              // 새로운 위치 = 현재 위치 + (방향 * 속력 * 시간)
              // transform.position += (Vector3)direction * Speed * Time.deltaTime;
+             
+             float posX = Mathf.Clamp(transform.position.x, MinX, MaxX);
+             float posY = Mathf.Clamp(transform.position.y, MinY, MaxY);
+        
+             transform.position = new Vector2(posX, posY);
              
              
          }
