@@ -16,8 +16,8 @@ public class PlayerMove : MonoBehaviour
          // if (Input.GetKey(KeyCode.LeftArrow)) 를 넣으면 왼쪽으로 움직인다는 값을 넣는거임
          // Debug.Log("왼쪽 방향키를 누르는 중");
          {
-             float h = Input.GetAxis("Horizontal");  // 키보드 왼/오른쪽 입력 상태에 따라 -1f ~0 ~ 1f 까지 반환
-             float v = Input.GetAxis("Vertical");    // 키보드 위/아래 입력 상태에 따라 -1f ~0 ~ 1f 까지 반환
+             float h = Input.GetAxisRaw("Horizontal");  // 키보드 왼/오른쪽 입력 상태에 따라 -1f ~0 ~ 1f 까지 반환
+             float v = Input.GetAxisRaw("Vertical");    // 키보드 위/아래 입력 상태에 따라 -1f ~0 ~ 1f 까지 반환
              
              Debug.Log($"h:{h}, v:{v}");
 
@@ -32,6 +32,9 @@ public class PlayerMove : MonoBehaviour
              // 속도 = 방향 * 속력 
                                                          // 매직 넘버란 : 보는 사람에 따라 의미가 달라질 수 있는
                                                          // 헷갈리는 숫자
+             Vector2 normalized = (direction * Speed).normalized;
+             // 벡터의 길이를 1로 만들어 주는 것 (즉,방향만 유지된다) 변수명은 의미가 있어야 한다.
+             
              transform.Translate(direction * Speed * Time.deltaTime);
              // deltaTime : 이전 프레임으로 부터 지금 프레임까지 시간이 얼마나 지났는지 Ms단위로 반환 
              // Ms -> 1/1000 초 
