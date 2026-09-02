@@ -16,7 +16,10 @@ public class PlayerMove : MonoBehaviour
      // 매 프레임마다 실행된다.
      // 초당 프레임 실행 횟수는 : 별다른 설정이 없을 경우 가능한 많이 
    private void Update()
-    {
+   {
+
+         
+         
          // 1. 키보드 입력을 받는다.
          // if (Input.GetKey(KeyCode.LeftArrow)) 를 넣으면 왼쪽으로 움직인다는 값을 넣는거임
          // Debug.Log("왼쪽 방향키를 누르는 중");
@@ -61,20 +64,23 @@ public class PlayerMove : MonoBehaviour
 
              transform.position = new Vector3(posX, posY, transform.position.z);
              
-             // E = 속도 증가
-             if (Input.GetKeyDown(KeyCode.E))
-             {
-                 Speed += 1f;
-             }
-
-             // Q = 속도 감소
-             if (Input.GetKeyDown(KeyCode.Q))
-             {
-                 Speed = Mathf.Max(0f, Speed - 1f);
-             }
-
-             
-             
+             SpeedChange();
          }
     }
+
+    private void SpeedChange()
+    {
+        // E = 속도 증가
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Speed += 1f;
+        }
+
+        // Q = 속도 감소
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            Speed = Mathf.Max(0f, Speed - 1f);
+        }
+    }
+    
 }
