@@ -2,13 +2,11 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private void Start()
-    {
-        
-    }
+    public float Health = 100;
+    public float speed = 3f;
 
-    private void Update()
+    void Update()
     {
-        
+        transform.position += Vector3.down * speed * Time.deltaTime;
     }
 }

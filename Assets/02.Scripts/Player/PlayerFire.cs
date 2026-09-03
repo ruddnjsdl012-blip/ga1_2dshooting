@@ -2,61 +2,48 @@ using UnityEngine;
 
 public class PlayerFire : MonoBehaviour
 {
-    // 총알 프리팹
     public GameObject BulletPrefab;
-
-    // 총알 생성 위치
     public Transform FirePoint;
 
-    // 총알 발사 쿨타임
     public float CoolTime = 0.5f;
-
-    // true = 자동 공격
-    // false = 수동 공격
     public bool AutoAttack = false;
 
-    // 마지막으로 총알을 발사한 시간
-    private float _lastFireTime;
+    private float LastFireTime = -1f;
 
     private void Update()
     {
-        // 1번을 누르면 자동/수동 공격 전환
+        // 1번으로 자동/수동 전환
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             AutoAttack = !AutoAttack;
         }
 
-
         // 자동 공격
         if (AutoAttack)
         {
-            if (Time.time >= _lastFireTime + CoolTime)
+            if (Time.time >= LastFireTime + CoolTime)
             {
                 Shoot();
-                _lastFireTime = Time.time;
             }
         }
 
         // 수동 공격
-        else
+        if (!AutoAttack && Input.GetKeyDown(KeyCode.Space))
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (Time.time >= _lastFireTime + CoolTime)
-                {
-                    Shoot();
-                    _lastFireTime = Time.time;
-                }
-            }
+            Shoot();
         }
     }
 
-
-    // 총알 발사
     private void Shoot()
     {
-        GameObject bullet = Instantiate(BulletPrefab);
+        GameObject bullet = Instantiate(
+            BulletPrefab,
+            FirePoint.position,
+            FirePoint.rotation
+        );
 
-        bullet.transform.position = FirePoint.position;
+        Debug.Log("총알 생성됨 : " + bullet.name);
+
+        LastFireTime = Time.time;
     }
 }
