@@ -3,6 +3,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float Speed = 10f;
+    public int Damage = 5;
 
     private void Update()
     {
@@ -11,11 +12,14 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Enemy와 충돌했을 때만 총알 삭제
-        if (collision.gameObject.CompareTag("Enemy"))
+        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+
+        if (enemy != null)
         {
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
+            enemy.TakeDamage(Damage);
         }
+
+        // 충돌하면 무조건 총알 삭제
+        Destroy(gameObject);
     }
 }

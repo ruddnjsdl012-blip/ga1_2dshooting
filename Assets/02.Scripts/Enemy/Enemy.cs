@@ -2,11 +2,24 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public float Health = 100;
-    public float speed = 3f;
+    public int MaxHealth = 10;
 
-    void Update()
+    private int CurrentHealth;
+
+    private void Start()
     {
-        transform.position += Vector3.down * speed * Time.deltaTime;
+        CurrentHealth = MaxHealth;
+    }
+
+    public void TakeDamage(int damage)
+    {
+        CurrentHealth -= damage;
+
+        Debug.Log("적 체력 : " + CurrentHealth);
+
+        if (CurrentHealth <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5935473602747713364}
   - component: {fileID: 8127587880459155456}
   - component: {fileID: 2045607583217247192}
-  - component: {fileID: -7389928136015634041}
+  - component: {fileID: 3450233598167378058}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -167,7 +167,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &-7389928136015634041
+--- !u!114 &3450233598167378058
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,5 +178,5 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9b5c4b38e5acab4fa2ae0b7b853ee51, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  speed: 3
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  MaxHealth: 100
