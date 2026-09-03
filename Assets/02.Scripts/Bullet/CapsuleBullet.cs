@@ -3,24 +3,24 @@ using UnityEngine;
 public class CapsuleBullet : MonoBehaviour
 
 {
-    public float Speed;
+    public float Speed = 10f;
+    public int Damage = 5;
 
     private void Update()
     {
-        Vector2 direction = Vector2.up; //  new Vector2(1, 0);
-        transform.Translate(direction * Speed * Time.deltaTime);
+        transform.Translate(Vector2.up * Speed * Time.deltaTime);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("충돌 했다!");
+        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
 
-        //나죽고
-        Destroy(this.gameObject);
+        if (enemy != null)
+        {
+            enemy.TakeDamage(Damage);
+        }
 
-        if (collision.gameObject.CompareTag("Enemy"))
-
-            //너죽자
-            Destroy(collision.gameObject);
+        // 충돌하면 총알은 무조건 삭제
+        Destroy(gameObject);
     }
 }
