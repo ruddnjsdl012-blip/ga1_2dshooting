@@ -1,23 +1,23 @@
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+
+public abstract class Enemy : MonoBehaviour
 {
-    public int MaxHealth = 10;
+    [SerializeField] private int _health = 100;
+    [SerializeField] protected float _moveSpeed;
 
-    private int CurrentHealth;
-
-    private void Start()
+    private void Update()
     {
-        CurrentHealth = MaxHealth;
+        Move();
     }
+
+    protected abstract void Move();
+
 
     public void TakeDamage(int damage)
     {
-        CurrentHealth -= damage;
-
-        Debug.Log("적 체력 : " + CurrentHealth);
-
-        if (CurrentHealth <= 0)
+        _health -= damage;
+        if (_health <= 0)
         {
             Destroy(gameObject);
         }
