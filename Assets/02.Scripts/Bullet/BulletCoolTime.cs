@@ -7,17 +7,17 @@ public class BulletCoolTime : MonoBehaviour
 
     public float CoolTime = 0.5f;
 
-    private float lastFireTime;
+    private float _lastFireTime;
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (Time.time >= lastFireTime + CoolTime)
+            if (Time.time >= _lastFireTime + CoolTime)
             {
                 Instantiate(BulletPrefab, FirePoint.position, Quaternion.identity);
 
-                lastFireTime = Time.time;
+                _lastFireTime = Time.time;
             }
         }
     }

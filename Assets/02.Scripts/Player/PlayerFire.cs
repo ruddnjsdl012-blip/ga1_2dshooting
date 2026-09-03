@@ -16,8 +16,7 @@ public class PlayerFire : MonoBehaviour
     public bool AutoAttack = false;
 
     // 마지막으로 총알을 발사한 시간
-    private float LastFireTime;
-
+    private float _lastFireTime;
 
     private void Update()
     {
@@ -31,23 +30,22 @@ public class PlayerFire : MonoBehaviour
         // 자동 공격
         if (AutoAttack)
         {
-            if (Time.time >= LastFireTime + CoolTime)
+            if (Time.time >= _lastFireTime + CoolTime)
             {
                 Shoot();
-                LastFireTime = Time.time;
+                _lastFireTime = Time.time;
             }
         }
-
 
         // 수동 공격
         else
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (Time.time >= LastFireTime + CoolTime)
+                if (Time.time >= _lastFireTime + CoolTime)
                 {
                     Shoot();
-                    LastFireTime = Time.time;
+                    _lastFireTime = Time.time;
                 }
             }
         }
