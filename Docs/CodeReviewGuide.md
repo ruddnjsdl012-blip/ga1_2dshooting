@@ -132,6 +132,43 @@ player.TakeDamage(damage);
 4. 이벤트, 인터페이스, 컴포지션 중 어떤 방법이 적절한가?
 5. 변경 후 클래스 간 관계가 어떻게 달라지는가?
 
+## 캐싱(Caching)
+
+캐싱은 자주 사용하는 데이터를 임시 저장해 두었다가
+다시 필요할 때 원래 데이터를 가져오는 대신 저장해 둔 데이터를 사용하는 기법이다.
+
+목적은 동일한 데이터를 반복해서 검색하거나 계산하는 비용을 줄이고
+게임의 성능을 향상시키는 것이다.
+
+
+### Unity에서 캐싱이 필요한 이유
+
+Unity에서는 매 프레임 또는 반복적으로 다음과 같은 작업을 수행하면
+불필요한 CPU 비용이 발생할 수 있다.
+
+* GetComponent()
+* Find()
+* FindObjectOfType()
+* GameObject.Find()
+* Camera.main
+* 반복적인 Transform 탐색
+* 문자열을 이용한 오브젝트 검색
+* 자주 사용되는 계산 결과
+* 반복적인 리소스 로드
+
+이런 작업의 결과를 미리 저장해 두고 재사용할 수 있다.
+
+
+### GetComponent() 캐싱
+
+다음과 같이 매번 GetComponent()를 호출하는 구조를 확인한다.
+
+```csharp
+void Update()
+{
+    GetComponent<Rigidbody>().AddForce(Vector3.forward);
+}
+
 ## SOLID 원칙
 
 SOLID 원칙을 기준으로 설계를 검토하되, 모든 코드에 인터페이스와 디자인 패턴을 강제하지 않는다.
