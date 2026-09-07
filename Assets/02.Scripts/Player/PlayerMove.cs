@@ -5,7 +5,7 @@ public class PlayerMove : MonoBehaviour
     // 목적: 키보드 입력에 따라서 플레이어 이동 처리를 하고 싶다.
 
     // 필요 필드:
-    public float Speed;
+    [SerializeField] private float _speed;
     public float MaxPositionY;
     public float MinPositionY;
     public float MaxPositionX;
@@ -21,16 +21,33 @@ public class PlayerMove : MonoBehaviour
         SpeedChange();
     }
 
+    public void SpeedUp(float upValue)
+    {
+        if (upValue < 0)
+        {
+            Debug.LogWarning("속도 증가량은 0보다 작을 수 없습니다.");
+            return;
+        }
+
+        _speed += upValue;
+
+        // 최대 속도를 제한하는 등의 메서드를 추가할수도 있다.
+        /*if (_speed > MaxSpeed)
+        {
+            _speed = MaxSpeed;
+        }*/
+    }
+
     private void SpeedChange()
     {
         // 7. Q/E 버튼 입력을 통한 스피드 업/다운
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Speed++;
+            _speed++;
         }
         else if (Input.GetKeyDown(KeyCode.Q))
         {
-            Speed--;
+            _speed--;
         }
     }
 
@@ -44,7 +61,7 @@ public class PlayerMove : MonoBehaviour
         Vector2 normalizedDirection = new Vector2(h, v).normalized;
 
         // 3. 방향과 속력에 따라 이동한다.
-        Vector2 newPosition = transform.position + (Vector3)normalizedDirection * Speed * Time.deltaTime;
+        Vector2 newPosition = transform.position + (Vector3)normalizedDirection * _speed * Time.deltaTime;
 
         // 4. 위치 y에 제한이 있다.
         if (newPosition.y > MaxPositionY)
