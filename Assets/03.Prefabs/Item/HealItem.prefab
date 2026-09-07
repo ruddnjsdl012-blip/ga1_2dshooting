@@ -141,5 +141,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e117edf1fcd9d14baf6c873c985b0c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  Type: 
+  Type: Heal
   Value: 0
