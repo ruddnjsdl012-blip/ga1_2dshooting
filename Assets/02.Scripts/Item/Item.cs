@@ -13,18 +13,33 @@ public class Item : MonoBehaviour
 
     private void Start()
     {
-        _player = GameObject.FindWithTag("Player").GetComponent<Player>();
+        // 안전하게 플레이어 찾기
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            _player = playerObj.GetComponent<Player>();
+        }
 
         if (_player == null)
         {
-            Debug.LogWarning("플레이어를 찾을 수 없습니다.");
-            return;
+            Debug.LogWarning("플레이어를 찾을 수 없습니다. (태그 또는 Player 컴포넌트 확인 필요)");
         }
     }
 
-
     private void Update()
     {
+        // 플레이어를 아직 못 찾았으면 계속 찾기 시도
+        if (_player == null)
+        {
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            if (playerObj != null)
+            {
+                _player = playerObj.GetComponent<Player>();
+            }
+
+            return;
+        }
+
         _waitTimer += Time.deltaTime;
         if (_waitTimer >= WaitTime)
         {
@@ -51,7 +66,7 @@ public class Item : MonoBehaviour
             Debug.LogWarning("플레이어 태그 오브젝트에 플레이어 컴포넌트가 없습니다.");
             return;
         }
-        
+
         // 심화 과제 : 퍼사드 패턴 (패턴:  객체지향에서 자주 일어나는 설계 문제를 잘 풀어내도록 경험에 의해 정리해논 공식처럼)
         // 심화 과제 : 아이템 종류가 조합에 의해 폭발적으로 증가할 경우에는 -> 조합 패턴을 사용해라
         // 포트폴리오에서 가장 중요한게 게임 구현 완성도 ( 코드의 완성도는 가장 후순위)
