@@ -46,4 +46,16 @@ public class PlayerFire : MonoBehaviour
 
         LastFireTime = Time.time;
     }
+
+    public void FireRateUp(float value)
+    {
+        CoolTime -= value;
+
+        if (CoolTime < 0.05f)
+        {
+            CoolTime = 0.05f;
+        }
+
+        Debug.Log("공격 속도 증가! 현재 쿨타임 : " + CoolTime);
+    }
 }
