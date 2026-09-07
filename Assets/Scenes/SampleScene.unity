@@ -966,7 +966,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFire
   BulletPrefab: {fileID: 4321566713343077149, guid: eaff3d1410404fe4d8232ab0546c5361, type: 3}
-  FirePoint: {fileID: 0}
+  FirePoint: {fileID: 1989157816}
   CoolTime: 0.5
   AutoAttack: 0
 --- !u!114 &1013730935
@@ -982,7 +982,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFire
   BulletPrefab: {fileID: 4321566713343077149, guid: eaff3d1410404fe4d8232ab0546c5361, type: 3}
-  FirePoint: {fileID: 0}
+  FirePoint: {fileID: 348689135}
   CoolTime: 0.5
   AutoAttack: 0
 --- !u!114 &1013730936
@@ -998,7 +998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFire
   BulletPrefab: {fileID: 1080386903841714927, guid: afd66f86a9ab2c14bae68f6027109b1c, type: 3}
-  FirePoint: {fileID: 0}
+  FirePoint: {fileID: 1206582241}
   CoolTime: 0.5
   AutoAttack: 0
 --- !u!114 &1013730937
@@ -1014,7 +1014,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFire
   BulletPrefab: {fileID: 1080386903841714927, guid: afd66f86a9ab2c14bae68f6027109b1c, type: 3}
-  FirePoint: {fileID: 0}
+  FirePoint: {fileID: 1533827994}
   CoolTime: 0.5
   AutoAttack: 0
 --- !u!114 &1013730938
