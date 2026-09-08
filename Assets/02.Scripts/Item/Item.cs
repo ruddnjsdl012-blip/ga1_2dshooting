@@ -5,6 +5,9 @@ public class Item : MonoBehaviour
     [SerializeField] private ItemType _type;
     [SerializeField] private float _value;
 
+    // 아이템 획득 이펙트
+    [SerializeField] private GameObject _pickupEffect;
+
     private const float WaitTime = 2f;
     private float _waitTimer = 0f;
     private const float MoveSpeed = 5f;
@@ -41,6 +44,7 @@ public class Item : MonoBehaviour
         }
 
         _waitTimer += Time.deltaTime;
+
         if (_waitTimer >= WaitTime)
         {
             FollowPlayer();
@@ -53,6 +57,7 @@ public class Item : MonoBehaviour
 
         Vector2 direction = _player.transform.position - transform.position;
         direction.Normalize();
+
         transform.Translate(direction * MoveSpeed * Time.deltaTime);
     }
 
@@ -62,6 +67,7 @@ public class Item : MonoBehaviour
 
         // 현재 오브젝트에서 찾고, 없으면 부모에서도 찾기
         Player player = other.GetComponent<Player>();
+
         if (player == null)
         {
             player = other.GetComponentInParent<Player>();
@@ -78,14 +84,14 @@ public class Item : MonoBehaviour
             case ItemType.Heal:
             {
                 player.Heal((int)_value);
-                Debug.Log("플레이어 체력: {player.health()}");
+                Debug.Log($"플레이어 체력: {player.Health}");
                 break;
             }
 
             case ItemType.MoveSeepUp:
             {
                 player.GetComponent<PlayerMove>().SpeedUp(_value);
-                Debug.Log($"플레이어 이동소고:{player.GetComponent<PlayerMove>().Getspeed()}");
+                Debug.Log($"플레이어 이동속도: {player.GetComponent<PlayerMove>().Getspeed()}");
                 break;
             }
 
@@ -96,6 +102,17 @@ public class Item : MonoBehaviour
             }
         }
 
+        // 아이템을 먹은 위치에 획득 이펙트 생성
+        if (_pickupEffect != null)
+        {
+            Instantiate(
+                _pickupEffect,
+                transform.position,
+                Quaternion.identity
+            );
+        }
+
+        // 아이템 삭제
         Destroy(gameObject);
     }
 }
