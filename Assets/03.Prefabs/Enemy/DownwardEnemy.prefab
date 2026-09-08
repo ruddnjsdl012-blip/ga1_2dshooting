@@ -110,7 +110,8 @@ MonoBehaviour:
   _health: 50
   _moveSpeed: 1
   _damage: 5
-  _itemPrefabs: []
+  _itemPrefabs:
+  - {fileID: 5991103120637550846, guid: 3c6fdf2313fb46749aa505b6956ac87e, type: 3}
 --- !u!50 &-459884407758745655
 Rigidbody2D:
   serializedVersion: 5
@@ -119,7 +120,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4668720352310626062}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0

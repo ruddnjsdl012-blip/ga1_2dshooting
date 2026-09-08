@@ -1176,7 +1176,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -7499361286947675208, guid: 9d08c296e91e91245a2cfacf2317f363, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -7499361286947675208, guid: 9d08c296e91e91245a2cfacf2317f363, type: 3}
       propertyPath: m_SpriteTilingProperty.pivot.x
@@ -1271,7 +1271,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -7499361286947675208, guid: 9d08c296e91e91245a2cfacf2317f363, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -7499361286947675208, guid: 9d08c296e91e91245a2cfacf2317f363, type: 3}
       propertyPath: m_SpriteTilingProperty.pivot.x
@@ -1697,7 +1697,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -7499361286947675208, guid: 9d08c296e91e91245a2cfacf2317f363, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -7499361286947675208, guid: 9d08c296e91e91245a2cfacf2317f363, type: 3}
       propertyPath: m_SpriteTilingProperty.pivot.x
