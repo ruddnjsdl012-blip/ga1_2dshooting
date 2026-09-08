@@ -112,6 +112,7 @@ MonoBehaviour:
   _damage: 5
   _itemPrefabs:
   - {fileID: 5071114116873148837, guid: 266e9dd0d2faa384f895b26ddbd380fd, type: 3}
+  _deatheffectPrefab: {fileID: 725748389856807714, guid: 4bda94453d2ca7444a0fff05b2d425f5, type: 3}
 --- !u!50 &-6767625662681495147
 Rigidbody2D:
   serializedVersion: 5

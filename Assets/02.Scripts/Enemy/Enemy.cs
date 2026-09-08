@@ -9,6 +9,9 @@ public abstract class Enemy : MonoBehaviour
 
     // 생성할 아이템 프리팹들
     [SerializeField] private Item[] _itemPrefabs;
+    [SerializeField] private GameObject _deatheffectPrefab;
+    // 죽을 떄 생성할 이펙트 프리펩
+    
 
     private void Update()
     {
@@ -25,6 +28,7 @@ public abstract class Enemy : MonoBehaviour
         {
             SpawnItem();
             Destroy(gameObject);
+            Instantiate((_deatheffectPrefab), transform.position, Quaternion.identity);
             return;
         }
 
@@ -63,6 +67,8 @@ public abstract class Enemy : MonoBehaviour
         }
 
         player.TakeDamage(_damage);
+        
+        
 
         Destroy(gameObject);
     }
