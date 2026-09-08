@@ -78,12 +78,14 @@ public class Item : MonoBehaviour
             case ItemType.Heal:
             {
                 player.Heal((int)_value);
+                Debug.Log("플레이어 체력: {player.health()}");
                 break;
             }
 
             case ItemType.MoveSeepUp:
             {
                 player.GetComponent<PlayerMove>().SpeedUp(_value);
+                Debug.Log($"플레이어 이동소고:{player.GetComponent<PlayerMove>().Getspeed()}");
                 break;
             }
 

@@ -108,6 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimedEnemy
   _health: 50
+  _animator: {fileID: 0}
   _moveSpeed: 1
   _damage: 5
   _itemPrefabs:

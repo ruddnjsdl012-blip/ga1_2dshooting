@@ -8,6 +8,8 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private Animator _animator;
 
     [SerializeField] private float _speed;
+    public float Speed => _speed;
+    
     public float MaxPositionY;
     public float MinPositionY;
     public float MaxPositionX;
@@ -26,6 +28,11 @@ public class PlayerMove : MonoBehaviour
         Move();
 
         SpeedChange();
+    }
+
+    public float Getspeed()
+    {
+        return _speed;
     }
 
     public void SpeedUp(float upValue)
