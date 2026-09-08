@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class HomingEnemy : Enemy
 {
-    private GameObject _player;
+   private GameObject _player;
 
     private void Start()
     {
