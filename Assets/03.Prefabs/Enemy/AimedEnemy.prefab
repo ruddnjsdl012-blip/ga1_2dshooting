@@ -112,7 +112,7 @@ MonoBehaviour:
   _damage: 5
   _itemPrefabs:
   - {fileID: 2410794177838064734, guid: 104b2875f981e9a4a96b33f2caead9ce, type: 3}
-  _deatheffectPrefab: {fileID: 725748389856807714, guid: 4bda94453d2ca7444a0fff05b2d425f5, type: 3}
+  _deathEffectPrefab: {fileID: 725748389856807714, guid: 4bda94453d2ca7444a0fff05b2d425f5, type: 3}
 --- !u!50 &-1734439755649665910
 Rigidbody2D:
   serializedVersion: 5
@@ -150,7 +150,7 @@ Animator:
   m_GameObject: {fileID: 5254084998472218302}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3eb60b7ca04325741b095e0935d5be2c, type: 2}
+  m_Controller: {fileID: 9100000, guid: 16e4d9e6b6285b9489a7c01927a7b44d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

@@ -2,24 +2,65 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // 캡슐화
-    // 데이터 은닉, 메서드를 통한 상태 변경
+    // =========================
+    // 체력
+    // =========================
+
     [SerializeField] private int _health = 100;
 
-    // 람다식 문법을 활용한 읽기 전용 프로퍼티
+    // 읽기 전용 프로퍼티
     public int Health => _health;
 
-    // 잘 설계된 클래스는
-    // - 필드 (인스턴스 변수)
-    // - 필드에 잘못된 값이 할당되지 않게 막고, 정상적으로 동작하는 메서드
-    // getter/setter : 특정 데이터를 get/set 해주는 메서드
+
+    // =========================
+    // 사망 이펙트
+    // =========================
 
     [SerializeField] private GameObject _deathEffect;
+
+
+    // =========================
+    // 폭탄
+    // =========================
+
+    [SerializeField] private GameObject _playerBomb;
+
+    // 폭탄 재사용 쿨타임
+    private const float BombCooldown = 10f;
+
+    // 현재 폭탄 쿨타임
+    private float _bombCooldownTimer = 0f;
+
+
+    // =========================
+    // Update
+    // =========================
+
+    private void Update()
+    {
+        // 폭탄 쿨타임 감소
+        if (_bombCooldownTimer > 0f)
+        {
+            _bombCooldownTimer -= Time.deltaTime;
+        }
+
+        // B키를 누르면 폭탄 사용
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            UseBomb();
+        }
+    }
+
+
+    // =========================
+    // 체력 관련
+    // =========================
 
     public int GetHealth()
     {
         return _health;
     }
+
 
     public void TakeDamage(int damage)
     {
@@ -34,12 +75,20 @@ public class Player : MonoBehaviour
         if (_health <= 0)
         {
             // 플레이어가 죽은 위치에 폭발 이펙트 생성
-            Instantiate(_deathEffect, transform.position, Quaternion.identity);
+            if (_deathEffect != null)
+            {
+                Instantiate(
+                    _deathEffect,
+                    transform.position,
+                    Quaternion.identity
+                );
+            }
 
             // 플레이어 삭제
             Destroy(gameObject);
         }
     }
+
 
     public void Heal(int healAmount)
     {
@@ -50,5 +99,59 @@ public class Player : MonoBehaviour
         }
 
         _health += healAmount;
+    }
+
+
+    // =========================
+    // 폭탄 사용
+    // =========================
+
+    private void UseBomb()
+    {
+        // 쿨타임 중이면 사용하지 않음
+        if (_bombCooldownTimer > 0f)
+        {
+            Debug.Log(
+                $"폭탄 쿨타임 중입니다. {_bombCooldownTimer:F1}초 남음"
+            );
+
+            return;
+        }
+
+
+        // 폭탄 프리팹이 연결되어 있는지 확인
+        if (_playerBomb == null)
+        {
+            Debug.LogWarning("PlayerBomb 프리팹이 연결되지 않았습니다.");
+            return;
+        }
+
+
+        // =========================
+        // 화면 중앙 위치 계산
+        // =========================
+
+        Vector3 screenCenter = new Vector3(
+            0.5f,
+            0.5f,
+            Mathf.Abs(Camera.main.transform.position.z - transform.position.z)
+        );
+
+        Vector3 bombPosition =
+            Camera.main.ViewportToWorldPoint(screenCenter);
+
+
+        // 폭탄 생성
+        Instantiate(
+            _playerBomb,
+            bombPosition,
+            Quaternion.identity
+        );
+
+
+        // 폭탄 쿨타임 시작
+        _bombCooldownTimer = BombCooldown;
+
+        Debug.Log("화면 중앙에 폭탄을 설치했습니다.");
     }
 }
