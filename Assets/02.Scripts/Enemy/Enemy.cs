@@ -15,11 +15,14 @@ public abstract class Enemy : MonoBehaviour
 
     // Animator
     private Animator _animator;
-
-
+    // 에너미가 공격 당할 떄 재생시켜주는 피격 사운드 
+    private AudioSource _damagedAudioSource;
+    
+    
     private void Awake()
     {
         _animator = GetComponent<Animator>();
+        _damagedAudioSource = GetComponent<AudioSource>();
 
         if (_animator == null)
         {
@@ -51,7 +54,7 @@ public abstract class Enemy : MonoBehaviour
             {
                 _animator.SetTrigger("Hit");
             }
-
+            _damagedAudioSource.Play();
             return;
         }
 
@@ -72,7 +75,6 @@ public abstract class Enemy : MonoBehaviour
                 Quaternion.identity
             );
         }
-
         // 적 제거
         Destroy(gameObject);
     }
