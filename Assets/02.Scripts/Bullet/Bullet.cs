@@ -2,12 +2,20 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    private AudioSource _audioSource;
     public float Speed = 10f;
     public int Damage = 5;
 
     private void Update()
     {
         transform.Translate(Vector2.up * Speed * Time.deltaTime);
+    }
+
+    private void Awake()
+    {
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.pitch = UnityEngine.Random.Range(-0.8f, 3f);
+        _audioSource.Play();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -20,6 +20,14 @@ public class Player : MonoBehaviour
 
 
     // =========================
+    // 피격 사운드
+    // =========================
+
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioClip _hitSound;
+
+
+    // =========================
     // 폭탄
     // =========================
 
@@ -71,6 +79,12 @@ public class Player : MonoBehaviour
         }
 
         _health -= damage;
+
+        // 피격 사운드 재생
+        if (_audioSource != null && _hitSound != null)
+        {
+            _audioSource.PlayOneShot(_hitSound);
+        }
 
         if (_health <= 0)
         {
