@@ -84,14 +84,13 @@ public abstract class Enemy : MonoBehaviour
         {
             _normalSprite = _spriteRenderer.sprite;
         }
-        
-        // 싱글톤 패턴
-        //1. 전역적으로 접근 가능하다.
-        // 2. 인스턴스(생성된 객체)가 하나임을 보장한다. 
+
         // Animator가 없으면 경고
         if (_animator == null)
         {
-            Debug.LogWarning($"{gameObject.name}에 Animator가 없습니다.");
+            Debug.LogWarning(
+                $"{gameObject.name}에 Animator가 없습니다."
+            );
         }
     }
 
@@ -149,7 +148,8 @@ public abstract class Enemy : MonoBehaviour
             // 피격 이미지
             // -------------------------
 
-            if (_spriteRenderer != null && _hitSprite != null)
+            if (_spriteRenderer != null &&
+                _hitSprite != null)
             {
                 StartCoroutine(HitFlash());
             }
@@ -161,7 +161,6 @@ public abstract class Enemy : MonoBehaviour
         // =========================
         // 사망
         // =========================
-
 
         // -------------------------
         // 아이템 생성
@@ -183,7 +182,9 @@ public abstract class Enemy : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("ScoreManager를 찾을 수 없습니다.");
+            Debug.LogWarning(
+                "ScoreManager를 찾을 수 없습니다."
+            );
         }
 
 
@@ -205,6 +206,27 @@ public abstract class Enemy : MonoBehaviour
         // 적 제거
         // -------------------------
 
+        Destroy(gameObject);
+    }
+
+
+    // =========================
+    // 스테이지 전환 시 적 제거
+    // =========================
+
+    public void StageClearDestroy()
+    {
+        // 사망 이펙트 생성
+        if (_deathEffectPrefab != null)
+        {
+            Instantiate(
+                _deathEffectPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+        }
+
+        // 적 제거
         Destroy(gameObject);
     }
 
@@ -240,15 +262,20 @@ public abstract class Enemy : MonoBehaviour
 
 
         // 아이템이 없으면 종료
-        if (_itemPrefabs == null || _itemPrefabs.Length == 0)
+        if (_itemPrefabs == null ||
+            _itemPrefabs.Length == 0)
         {
-            Debug.LogWarning("생성할 아이템 프리팹이 없습니다.");
+            Debug.LogWarning(
+                "생성할 아이템 프리팹이 없습니다."
+            );
+
             return;
         }
 
 
         // 랜덤 아이템 선택
-        int randomIndex = Random.Range(0, _itemPrefabs.Length);
+        int randomIndex =
+            Random.Range(0, _itemPrefabs.Length);
 
 
         // 아이템 생성
@@ -274,13 +301,17 @@ public abstract class Enemy : MonoBehaviour
 
 
         // Player 가져오기
-        Player player = other.GetComponent<Player>();
+        Player player =
+            other.GetComponent<Player>();
 
 
         // Player가 없으면 종료
         if (player == null)
         {
-            Debug.LogWarning("플레이어가 null입니다.");
+            Debug.LogWarning(
+                "플레이어가 null입니다."
+            );
+
             return;
         }
 
