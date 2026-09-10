@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8913281161183796467}
   - component: {fileID: 1624664917634441220}
   - component: {fileID: -1734439755649665910}
-  - component: {fileID: -2540157268872852718}
   - component: {fileID: 3084898429413343778}
   - component: {fileID: 2710118697772161832}
   m_Layer: 8
@@ -143,28 +142,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!95 &-2540157268872852718
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5254084998472218302}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 16e4d9e6b6285b9489a7c01927a7b44d, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!60 &3084898429413343778
 PolygonCollider2D:
   m_ObjectHideFlags: 0
