@@ -114,6 +114,8 @@ MonoBehaviour:
   _itemPrefabs:
   - {fileID: 2410794177838064734, guid: 104b2875f981e9a4a96b33f2caead9ce, type: 3}
   _deathEffectPrefab: {fileID: 725748389856807714, guid: 4bda94453d2ca7444a0fff05b2d425f5, type: 3}
+  _hitSprite: {fileID: 4326287474489854147, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
+  _hitDuration: 0.3
 --- !u!50 &-1734439755649665910
 Rigidbody2D:
   serializedVersion: 5

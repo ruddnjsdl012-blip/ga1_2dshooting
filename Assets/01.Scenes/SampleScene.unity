@@ -1811,12 +1811,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 142468f47ab831e479c41a1ee26a4fe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
-  _animator: {fileID: 1013730942}
-  _speed: 2
+  _speed: 0.5
   MaxPositionY: -1
   MinPositionY: -4
   MaxPositionX: 3
   MinPositionX: -3
+  _animator: {fileID: 1013730942}
+  _autoMove: 1
+  _changeDirectionTime: 1
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  _detectDistance: 3
+  _avoidDistance: 2
+  _avoidStrength: 2
 --- !u!114 &1013730934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1960,7 +1968,7 @@ MonoBehaviour:
   _health: 100
   _deathEffect: {fileID: 8194992990867289339, guid: 99bc28c0d45f51c4fbac01080b73edc7, type: 3}
   _audioSource: {fileID: 0}
-  _hitSound: {fileID: 0}
+  _hitSound: {fileID: 8300000, guid: 72127805eb2bc4e7fbf2e02eca266cfa, type: 3}
   _playerBomb: {fileID: 2694392628632614654, guid: d211416cf9d469f4d9b3c4cb5db31d7c, type: 3}
 --- !u!61 &1013730944
 BoxCollider2D:

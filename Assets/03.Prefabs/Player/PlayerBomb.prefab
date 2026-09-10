@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377ac04d3e0afef4ab6348543b90fc7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBomb
-  _duration: 2
+  _duration: 0.3
   _bombRadius: 7
 --- !u!212 &7645798446362105527
 SpriteRenderer:
@@ -106,7 +106,7 @@ SpriteRenderer:
   m_Size: {x: 2.18, y: 0.72}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!61 &4535970775402767505
 BoxCollider2D:

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
@@ -15,14 +16,33 @@ public abstract class Enemy : MonoBehaviour
 
     // Animator
     private Animator _animator;
-    // 에너미가 공격 당할 떄 재생시켜주는 피격 사운드 
+
+    // 피격 사운드
     private AudioSource _damagedAudioSource;
-    
-    
+
+    // =========================
+    // 피격 이미지
+    // =========================
+
+    [SerializeField] private Sprite _hitSprite;
+    [SerializeField] private float _hitDuration = 0.1f;
+
+    private SpriteRenderer _spriteRenderer;
+    private Sprite _normalSprite;
+
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
         _damagedAudioSource = GetComponent<AudioSource>();
+
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (_spriteRenderer != null)
+        {
+            // 현재 일반 이미지 기억
+            _normalSprite = _spriteRenderer.sprite;
+        }
 
         if (_animator == null)
         {
@@ -47,14 +67,27 @@ public abstract class Enemy : MonoBehaviour
     {
         _health -= damage;
 
-        // 죽지 않았다면 피격 애니메이션 실행
+        // 죽지 않았다면 피격 처리
         if (_health > 0)
         {
+            // 피격 애니메이션
             if (_animator != null)
             {
                 _animator.SetTrigger("Hit");
             }
-            _damagedAudioSource.Play();
+
+            // 피격 사운드
+            if (_damagedAudioSource != null)
+            {
+                _damagedAudioSource.Play();
+            }
+
+            // 피격 이미지
+            if (_spriteRenderer != null && _hitSprite != null)
+            {
+                StartCoroutine(HitFlash());
+            }
+
             return;
         }
 
@@ -75,8 +108,25 @@ public abstract class Enemy : MonoBehaviour
                 Quaternion.identity
             );
         }
+
         // 적 제거
         Destroy(gameObject);
+    }
+
+
+    // =========================
+    // 피격 이미지
+    // =========================
+    private IEnumerator HitFlash()
+    {
+        // 흰색 이미지로 변경
+        _spriteRenderer.sprite = _hitSprite;
+
+        // 잠깐 대기
+        yield return new WaitForSeconds(_hitDuration);
+
+        // 원래 이미지로 복구
+        _spriteRenderer.sprite = _normalSprite;
     }
 
 
@@ -91,7 +141,6 @@ public abstract class Enemy : MonoBehaviour
             return;
         }
 
-
         // 아이템이 없으면 종료
         if (_itemPrefabs == null || _itemPrefabs.Length == 0)
         {
@@ -99,10 +148,8 @@ public abstract class Enemy : MonoBehaviour
             return;
         }
 
-
         // 랜덤 아이템 선택
         int randomIndex = Random.Range(0, _itemPrefabs.Length);
-
 
         // 아이템 생성
         Instantiate(
@@ -124,7 +171,6 @@ public abstract class Enemy : MonoBehaviour
             return;
         }
 
-
         Player player = other.GetComponent<Player>();
 
         if (player == null)
@@ -132,7 +178,6 @@ public abstract class Enemy : MonoBehaviour
             Debug.LogWarning("플레이어가 null입니다.");
             return;
         }
-
 
         // 플레이어에게 데미지
         player.TakeDamage(_damage);
