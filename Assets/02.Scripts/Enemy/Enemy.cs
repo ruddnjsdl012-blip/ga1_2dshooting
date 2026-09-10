@@ -84,7 +84,10 @@ public abstract class Enemy : MonoBehaviour
         {
             _normalSprite = _spriteRenderer.sprite;
         }
-
+        
+        // 싱글톤 패턴
+        //1. 전역적으로 접근 가능하다.
+        // 2. 인스턴스(생성된 객체)가 하나임을 보장한다. 
         // Animator가 없으면 경고
         if (_animator == null)
         {

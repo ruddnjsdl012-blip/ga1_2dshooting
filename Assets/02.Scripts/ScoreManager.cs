@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
+    // static(정적)
+    public static ScoreManager Instance;
+    
     // =========================
     // 점수 데이터
     // =========================
@@ -18,6 +21,11 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _bestScoreTextUI;
     [SerializeField] private TextMeshProUGUI _currentScoreTextUI;
 
+    private void Awake()
+    {
+        Instance = this;
+        
+    }
 
     // =========================
     // 현재 점수 가져오기
