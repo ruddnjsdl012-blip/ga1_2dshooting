@@ -4,7 +4,7 @@ using UnityEngine;
 public class ScoreManager : MonoBehaviour
 {
     // static(정적)
-    public static ScoreManager Instance;
+    public static ScoreManager Instance = null;
     
     // =========================
     // 점수 데이터
@@ -12,6 +12,8 @@ public class ScoreManager : MonoBehaviour
 
     private int _bestscore;
     private int _currentScore;
+    private int _lastRefreshScore = -1;
+    
 
 
     // =========================
@@ -23,6 +25,12 @@ public class ScoreManager : MonoBehaviour
 
     private void Awake()
     {
+        // 늦게 태어난 매니저는 늦어서 삭제 
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         
     }
@@ -75,6 +83,9 @@ public class ScoreManager : MonoBehaviour
 
     private void Refresh()
     {
+        if (_lastRefreshScore == _bestscore) return;
+        
+        
         if (_bestScoreTextUI != null)
         {
             _bestScoreTextUI.text = $"BestScore: {_bestscore}";
