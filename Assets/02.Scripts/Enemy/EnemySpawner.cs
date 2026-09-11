@@ -11,10 +11,19 @@ public class EnemySpawner : MonoBehaviour
 
     private float _timer;
 
-    // 생성할 적과 각 적의 가중치 데이터
-    [SerializeField] private EnemySpawnDataTableSO _spawnDataTable;
 
-    // 현재 적을 생성할 수 있는지 여부
+    // =========================
+    // 적 생성 데이터
+    // =========================
+
+    [SerializeField]
+    private EnemySpawnDataTableSO _spawnDataTable;
+
+
+    // =========================
+    // 스폰 가능 여부
+    // =========================
+
     private bool _canSpawn = true;
 
 
@@ -30,14 +39,19 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
+
         _timer += Time.deltaTime;
+
 
         if (_timer >= _spawnInterval)
         {
             _timer = 0f;
 
-            // 다음 적이 생성되는 시간을 랜덤하게 설정
-            _spawnInterval = Random.Range(1f, 3f);
+
+            // 다음 적 생성 시간을 랜덤하게 설정
+            _spawnInterval =
+                Random.Range(1f, 3f);
+
 
             Spawn();
         }
@@ -50,39 +64,122 @@ public class EnemySpawner : MonoBehaviour
 
     private void Spawn()
     {
-        // 1. 모든 적의 가중치를 더한다.
+        // =========================
+        // 데이터 확인
+        // =========================
+
+        if (_spawnDataTable == null)
+        {
+            Debug.LogWarning(
+                "EnemySpawnDataTableSO가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+
+        if (_spawnDataTable.Datas == null ||
+            _spawnDataTable.Datas.Length == 0)
+        {
+            Debug.LogWarning(
+                "EnemySpawnDataTableSO에 적 데이터가 없습니다."
+            );
+
+            return;
+        }
+
+
+        // =========================
+        // 1. 전체 가중치 계산
+        // =========================
 
         int totalWeight = 0;
 
-        foreach (EnemySpawnData data in _spawnDataTable.Datas)
+
+        foreach (EnemySpawnData data
+                 in _spawnDataTable.Datas)
         {
             totalWeight += data.Weight;
         }
 
 
-        // 2. 전체 가중치 범위에서
-        // 랜덤한 숫자를 하나 뽑는다.
+        // 가중치가 잘못된 경우
+        if (totalWeight <= 0)
+        {
+            Debug.LogWarning(
+                "적의 가중치가 올바르지 않습니다."
+            );
 
-        int randomWeight = Random.Range(0, totalWeight);
+            return;
+        }
 
 
-        // 3. 가중치를 누적하면서
-        // 선택된 구간을 찾는다.
+        // =========================
+        // 2. 랜덤 가중치 선택
+        // =========================
+
+        int randomWeight =
+            Random.Range(
+                0,
+                totalWeight
+            );
+
+
+        // =========================
+        // 3. 누적 가중치로 적 선택
+        // =========================
 
         int cumulativeWeight = 0;
 
-        foreach (EnemySpawnData data in _spawnDataTable.Datas)
+
+        foreach (EnemySpawnData data
+                 in _spawnDataTable.Datas)
         {
-            cumulativeWeight += data.Weight;
+            cumulativeWeight +=
+                data.Weight;
+
 
             if (randomWeight < cumulativeWeight)
             {
-                // 선택된 적을 생성한다.
-                GameObject enemy = Instantiate(
-                    data.EnemyPrefab,
-                    transform.position,
-                    Quaternion.identity
-                );
+                // =========================
+                // 오브젝트 풀에서 적 가져오기
+                // =========================
+
+                GameObject enemy =
+                    EnemyPool.Instance.GetEnemy(
+                        data.EnemyPrefab
+                    );
+
+
+                // 사용 가능한 적이 없는 경우
+                if (enemy == null)
+                {
+                    return;
+                }
+
+
+                // =========================
+                // 위치 설정
+                // =========================
+
+                enemy.transform.position =
+                    transform.position;
+
+
+                // =========================
+                // 회전 설정
+                // =========================
+
+                enemy.transform.rotation =
+                    Quaternion.identity;
+
+
+                // =========================
+                // 적 활성화
+                // =========================
+
+                enemy.SetActive(true);
+
 
                 break;
             }
@@ -98,7 +195,7 @@ public class EnemySpawner : MonoBehaviour
     {
         _canSpawn = false;
 
-        // 기존 타이머도 초기화한다.
+        // 기존 타이머 초기화
         _timer = 0f;
     }
 
@@ -111,7 +208,7 @@ public class EnemySpawner : MonoBehaviour
     {
         _canSpawn = true;
 
-        // 스폰 재개 후 바로 생성되지 않도록 타이머 초기화
+        // 스폰 재개 후 바로 생성되지 않도록 초기화
         _timer = 0f;
     }
 }

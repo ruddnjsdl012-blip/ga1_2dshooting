@@ -9,13 +9,28 @@ public abstract class Enemy : MonoBehaviour
 
     [SerializeField] private int _health = 100;
 
+    // 최대 체력
+    private int _maxHealth;
+
+
+    // =========================
     // 적 이동 속도
+    // =========================
+
     [SerializeField] protected float _moveSpeed;
 
+
+    // =========================
     // 플레이어에게 주는 데미지
+    // =========================
+
     [SerializeField] protected int _damage;
 
+
+    // =========================
     // 적 처치 시 얻는 점수
+    // =========================
+
     [SerializeField] private int _score = 100;
 
 
@@ -23,7 +38,6 @@ public abstract class Enemy : MonoBehaviour
     // 아이템
     // =========================
 
-    // 생성할 아이템 프리팹들
     [SerializeField] private Item[] _itemPrefabs;
 
 
@@ -52,15 +66,12 @@ public abstract class Enemy : MonoBehaviour
     // 피격 이미지
     // =========================
 
-    // 적이 맞았을 때 보여줄 하얀색 이미지
     [SerializeField] private Sprite _hitSprite;
 
-    // 하얀색 이미지가 유지되는 시간
     [SerializeField] private float _hitDuration = 0.1f;
 
     private SpriteRenderer _spriteRenderer;
 
-    // 원래 적 이미지
     private Sprite _normalSprite;
 
 
@@ -70,20 +81,31 @@ public abstract class Enemy : MonoBehaviour
 
     private void Awake()
     {
+        // 최대 체력 기억
+        _maxHealth = _health;
+
+
         // Animator 가져오기
         _animator = GetComponent<Animator>();
 
+
         // AudioSource 가져오기
-        _damagedAudioSource = GetComponent<AudioSource>();
+        _damagedAudioSource =
+            GetComponent<AudioSource>();
+
 
         // SpriteRenderer 가져오기
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _spriteRenderer =
+            GetComponent<SpriteRenderer>();
+
 
         // 현재 Sprite 기억
         if (_spriteRenderer != null)
         {
-            _normalSprite = _spriteRenderer.sprite;
+            _normalSprite =
+                _spriteRenderer.sprite;
         }
+
 
         // Animator가 없으면 경고
         if (_animator == null)
@@ -91,6 +113,38 @@ public abstract class Enemy : MonoBehaviour
             Debug.LogWarning(
                 $"{gameObject.name}에 Animator가 없습니다."
             );
+        }
+    }
+
+
+    // =========================
+    // 적 재사용 시 초기화
+    // =========================
+
+    public void ResetEnemy()
+    {
+        // =========================
+        // 체력 초기화
+        // =========================
+
+        _health = _maxHealth;
+
+
+        // =========================
+        // 코루틴 초기화
+        // =========================
+
+        StopAllCoroutines();
+
+
+        // =========================
+        // 피격 이미지 원상복구
+        // =========================
+
+        if (_spriteRenderer != null)
+        {
+            _spriteRenderer.sprite =
+                _normalSprite;
         }
     }
 
@@ -113,6 +167,17 @@ public abstract class Enemy : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        // 잘못된 데미지 방지
+        if (damage < 0)
+        {
+            Debug.LogWarning(
+                "데미지는 음수일 수 없습니다."
+            );
+
+            return;
+        }
+
+
         // 체력 감소
         _health -= damage;
 
@@ -154,6 +219,7 @@ public abstract class Enemy : MonoBehaviour
                 StartCoroutine(HitFlash());
             }
 
+
             return;
         }
 
@@ -161,6 +227,7 @@ public abstract class Enemy : MonoBehaviour
         // =========================
         // 사망
         // =========================
+
 
         // -------------------------
         // 아이템 생성
@@ -203,10 +270,10 @@ public abstract class Enemy : MonoBehaviour
 
 
         // -------------------------
-        // 적 제거
+        // 적 풀로 반환
         // -------------------------
 
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 
 
@@ -216,7 +283,10 @@ public abstract class Enemy : MonoBehaviour
 
     public void StageClearDestroy()
     {
+        // =========================
         // 사망 이펙트 생성
+        // =========================
+
         if (_deathEffectPrefab != null)
         {
             Instantiate(
@@ -226,8 +296,12 @@ public abstract class Enemy : MonoBehaviour
             );
         }
 
-        // 적 제거
-        Destroy(gameObject);
+
+        // =========================
+        // 적 풀로 반환
+        // =========================
+
+        gameObject.SetActive(false);
     }
 
 
@@ -238,13 +312,19 @@ public abstract class Enemy : MonoBehaviour
     private IEnumerator HitFlash()
     {
         // 하얀색 이미지로 변경
-        _spriteRenderer.sprite = _hitSprite;
+        _spriteRenderer.sprite =
+            _hitSprite;
+
 
         // 잠시 대기
-        yield return new WaitForSeconds(_hitDuration);
+        yield return new WaitForSeconds(
+            _hitDuration
+        );
+
 
         // 원래 이미지로 복구
-        _spriteRenderer.sprite = _normalSprite;
+        _spriteRenderer.sprite =
+            _normalSprite;
     }
 
 
@@ -254,14 +334,20 @@ public abstract class Enemy : MonoBehaviour
 
     private void SpawnItem()
     {
+        // =========================
         // 30% 확률
+        // =========================
+
         if (Random.Range(0, 100) > 30)
         {
             return;
         }
 
 
+        // =========================
         // 아이템이 없으면 종료
+        // =========================
+
         if (_itemPrefabs == null ||
             _itemPrefabs.Length == 0)
         {
@@ -273,12 +359,21 @@ public abstract class Enemy : MonoBehaviour
         }
 
 
+        // =========================
         // 랜덤 아이템 선택
+        // =========================
+
         int randomIndex =
-            Random.Range(0, _itemPrefabs.Length);
+            Random.Range(
+                0,
+                _itemPrefabs.Length
+            );
 
 
+        // =========================
         // 아이템 생성
+        // =========================
+
         Instantiate(
             _itemPrefabs[randomIndex],
             transform.position,
@@ -320,7 +415,10 @@ public abstract class Enemy : MonoBehaviour
         player.TakeDamage(_damage);
 
 
-        // 적 제거
-        Destroy(gameObject);
+        // =========================
+        // 적 풀로 반환
+        // =========================
+
+        gameObject.SetActive(false);
     }
 }
