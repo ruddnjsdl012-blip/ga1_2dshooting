@@ -2,117 +2,226 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
+    // =========================
+    // 아이템 종류
+    // =========================
+
     [SerializeField] private ItemType _type;
+
+
+    // =========================
+    // 아이템 효과 수치
+    // =========================
+
     [SerializeField] private float _value;
 
-    // 아이템 획득 이펙트
-    [SerializeField] private GameObject _pickupEffect;
+
+    // =========================
+    // 플레이어에게 이동하기 전 대기 시간
+    // =========================
 
     private const float WaitTime = 2f;
+
     private float _waitTimer = 0f;
+
+
+    // =========================
+    // 플레이어를 따라가는 속도
+    // =========================
+
     private const float MoveSpeed = 5f;
+
+
+    // =========================
+    // 플레이어
+    // =========================
 
     private Player _player = null;
 
-    private void Start()
-    {
-        // 안전하게 플레이어 찾기
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj != null)
-        {
-            _player = playerObj.GetComponent<Player>();
-        }
 
+    // =========================
+    // 오브젝트가 처음 생성될 때
+    // =========================
+
+    private void Awake()
+    {
+        _player = null;
+    }
+
+
+    // =========================
+    // 오브젝트 풀에서 활성화될 때
+    // =========================
+
+    private void OnEnable()
+    {
+        // 대기 시간 초기화
+        _waitTimer = 0f;
+
+
+        // 플레이어 찾기
         if (_player == null)
         {
-            Debug.LogWarning("플레이어를 찾을 수 없습니다. (태그 또는 Player 컴포넌트 확인 필요)");
+            GameObject playerObject =
+                GameObject.FindWithTag("Player");
+
+            if (playerObject != null)
+            {
+                _player =
+                    playerObject.GetComponent<Player>();
+            }
         }
     }
+
+
+    // =========================
+    // Update
+    // =========================
 
     private void Update()
     {
-        // 플레이어를 아직 못 찾았으면 계속 찾기 시도
-        if (_player == null)
-        {
-            GameObject playerObj = GameObject.FindWithTag("Player");
-            if (playerObj != null)
-            {
-                _player = playerObj.GetComponent<Player>();
-            }
+        _waitTimer += Time.deltaTime;
 
+
+        // 2초 동안 가만히 있음
+        if (_waitTimer < WaitTime)
+        {
             return;
         }
 
-        _waitTimer += Time.deltaTime;
 
-        if (_waitTimer >= WaitTime)
-        {
-            FollowPlayer();
-        }
+        // 2초가 지나면 플레이어를 따라감
+        FollowPlayer();
     }
+
+
+    // =========================
+    // 플레이어 따라가기
+    // =========================
 
     private void FollowPlayer()
     {
-        if (_player == null) return;
-
-        Vector2 direction = _player.transform.position - transform.position;
-        direction.Normalize();
-
-        transform.Translate(direction * MoveSpeed * Time.deltaTime);
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (!other.CompareTag("Player")) return;
-
-        // 현재 오브젝트에서 찾고, 없으면 부모에서도 찾기
-        Player player = other.GetComponent<Player>();
-
-        if (player == null)
+        if (_player == null)
         {
-            player = other.GetComponentInParent<Player>();
-        }
-
-        if (player == null)
-        {
-            Debug.LogWarning("플레이어 태그 오브젝트에 플레이어 컴포넌트가 없습니다.");
             return;
         }
 
+
+        Vector3 direction =
+            (
+                _player.transform.position
+                - transform.position
+            ).normalized;
+
+
+        transform.Translate(
+            direction
+            * MoveSpeed
+            * Time.deltaTime
+        );
+    }
+
+
+    // =========================
+    // 플레이어와 충돌
+    // =========================
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // 플레이어가 아니면 무시
+        if (!other.CompareTag("Player"))
+        {
+            return;
+        }
+
+
+        // Player 컴포넌트 가져오기
+        Player player =
+            other.GetComponent<Player>();
+
+
+        if (player == null)
+        {
+            return;
+        }
+
+
+        // 아이템 효과 적용
+        ApplyItemEffect(player);
+
+
+        // =========================
+        // 오브젝트 풀로 반환
+        // =========================
+
+        gameObject.SetActive(false);
+    }
+
+
+    // =========================
+    // 아이템 효과 적용
+    // =========================
+
+    private void ApplyItemEffect(Player player)
+    {
         switch (_type)
         {
+            // =========================
+            // 체력 회복
+            // =========================
+
             case ItemType.Heal:
-            {
+
                 player.Heal((int)_value);
-                Debug.Log($"플레이어 체력: {player.Health}");
+
+                Debug.Log(
+                    $"회복 아이템 획득! +{_value}"
+                );
+
                 break;
-            }
+
+
+            // =========================
+            // 이동 속도 증가
+            // =========================
 
             case ItemType.MoveSeepUp:
-            {
-                player.GetComponent<PlayerMove>().SpeedUp(_value);
-                Debug.Log($"플레이어 이동속도: {player.GetComponent<PlayerMove>().Getspeed()}");
+
+                Debug.Log(
+                    $"이동 속도 증가 아이템 획득! +{_value}"
+                );
+
+                // 나중에 Player의 이동 속도 증가 기능 연결
+
                 break;
-            }
+
+
+            // =========================
+            // 발사 속도 증가
+            // =========================
 
             case ItemType.FireRateUp:
-            {
-                player.GetComponent<PlayerFire>().FireRateUp(_value);
+
+                Debug.Log(
+                    $"발사 속도 증가 아이템 획득! +{_value}"
+                );
+
+                // 나중에 PlayerFire의 발사 간격 감소 기능 연결
+
                 break;
-            }
-        }
 
-        // 아이템을 먹은 위치에 획득 이펙트 생성
-        if (_pickupEffect != null)
-        {
-            Instantiate(
-                _pickupEffect,
-                transform.position,
-                Quaternion.identity
-            );
-        }
 
-        // 아이템 삭제
-        Destroy(gameObject);
+            // =========================
+            // 예외
+            // =========================
+
+            default:
+
+                Debug.LogWarning(
+                    $"알 수 없는 ItemType입니다. : {_type}"
+                );
+
+                break;
+        }
     }
 }
