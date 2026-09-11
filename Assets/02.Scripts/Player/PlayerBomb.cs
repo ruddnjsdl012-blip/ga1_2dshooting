@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerBomb : MonoBehaviour
 {
+    [SerializeField] private GameObject _playerBomb;
     [SerializeField] private float _duration = 3f;
     [SerializeField] private float _bombRadius = 3f;
 

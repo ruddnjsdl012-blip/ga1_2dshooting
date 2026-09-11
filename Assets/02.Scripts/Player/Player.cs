@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
 
     [SerializeField] private int _health = 100;
 
-    // 읽기 전용 프로퍼티
     public int Health => _health;
 
 
@@ -24,6 +23,7 @@ public class Player : MonoBehaviour
     // =========================
 
     [SerializeField] private AudioSource _audioSource;
+
     [SerializeField] private AudioClip _hitSound;
 
 
@@ -33,10 +33,15 @@ public class Player : MonoBehaviour
 
     [SerializeField] private GameObject _playerBomb;
 
-    // 폭탄 재사용 쿨타임
+    [SerializeField] private BombEffectUI _bombEffectUI;
+
+
+    // =========================
+    // 폭탄 쿨타임
+    // =========================
+
     private const float BombCooldown = 10f;
 
-    // 현재 폭탄 쿨타임
     private float _bombCooldownTimer = 0f;
 
 
@@ -52,6 +57,7 @@ public class Player : MonoBehaviour
             _bombCooldownTimer -= Time.deltaTime;
         }
 
+
         // B키를 누르면 폭탄 사용
         if (Input.GetKeyDown(KeyCode.B))
         {
@@ -61,7 +67,7 @@ public class Player : MonoBehaviour
 
 
     // =========================
-    // 체력 관련
+    // 체력
     // =========================
 
     public int GetHealth()
@@ -74,21 +80,26 @@ public class Player : MonoBehaviour
     {
         if (damage < 0)
         {
-            Debug.LogWarning("대미지는 음수일 수 없습니다.");
+            Debug.LogWarning(
+                "대미지는 음수일 수 없습니다."
+            );
+
             return;
         }
 
         _health -= damage;
 
-        // 피격 사운드 재생
+
+        // 피격 사운드
         if (_audioSource != null && _hitSound != null)
         {
             _audioSource.PlayOneShot(_hitSound);
         }
 
+
+        // 사망
         if (_health <= 0)
         {
-            // 플레이어가 죽은 위치에 폭발 이펙트 생성
             if (_deathEffect != null)
             {
                 Instantiate(
@@ -98,7 +109,6 @@ public class Player : MonoBehaviour
                 );
             }
 
-            // 플레이어 삭제
             Destroy(gameObject);
         }
     }
@@ -108,7 +118,10 @@ public class Player : MonoBehaviour
     {
         if (healAmount < 0)
         {
-            Debug.LogWarning("힐량은 음수일 수 없습니다.");
+            Debug.LogWarning(
+                "힐량은 음수일 수 없습니다."
+            );
+
             return;
         }
 
@@ -122,40 +135,63 @@ public class Player : MonoBehaviour
 
     private void UseBomb()
     {
-        // 쿨타임 중이면 사용하지 않음
+        // 쿨타임 확인
         if (_bombCooldownTimer > 0f)
         {
             Debug.Log(
-                $"폭탄 쿨타임 중입니다. {_bombCooldownTimer:F1}초 남음"
+                $"폭탄 쿨타임 중입니다. " +
+                $"{_bombCooldownTimer:F1}초 남음"
             );
 
             return;
         }
 
 
-        // 폭탄 프리팹이 연결되어 있는지 확인
+        // 폭탄 프리팹 확인
         if (_playerBomb == null)
         {
-            Debug.LogWarning("PlayerBomb 프리팹이 연결되지 않았습니다.");
+            Debug.LogWarning(
+                "PlayerBomb 프리팹이 연결되지 않았습니다."
+            );
+
             return;
         }
 
 
         // =========================
-        // 화면 중앙 위치 계산
+        // 화면 중앙 위치
         // =========================
+
+        Camera mainCamera = Camera.main;
+
+        if (mainCamera == null)
+        {
+            Debug.LogError(
+                "Main Camera를 찾을 수 없습니다."
+            );
+
+            return;
+        }
+
 
         Vector3 screenCenter = new Vector3(
             0.5f,
             0.5f,
-            Mathf.Abs(Camera.main.transform.position.z - transform.position.z)
+            Mathf.Abs(
+                mainCamera.transform.position.z
+                - transform.position.z
+            )
         );
 
+
         Vector3 bombPosition =
-            Camera.main.ViewportToWorldPoint(screenCenter);
+            mainCamera.ViewportToWorldPoint(screenCenter);
 
 
+        // =========================
         // 폭탄 생성
+        // =========================
+
         Instantiate(
             _playerBomb,
             bombPosition,
@@ -163,9 +199,29 @@ public class Player : MonoBehaviour
         );
 
 
-        // 폭탄 쿨타임 시작
+        // =========================
+        // 폭탄 UI 실행
+        // =========================
+
+        if (_bombEffectUI != null)
+        {
+            _bombEffectUI.Play();
+        }
+        else
+        {
+            Debug.LogError(
+                "Player의 Bomb Effect UI가 연결되지 않았습니다."
+            );
+        }
+
+
+        // =========================
+        // 쿨타임 시작
+        // =========================
+
         _bombCooldownTimer = BombCooldown;
 
-        Debug.Log("화면 중앙에 폭탄을 설치했습니다.");
+
+        Debug.Log("B키 → 폭탄 사용");
     }
 }

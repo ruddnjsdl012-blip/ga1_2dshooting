@@ -2,9 +2,15 @@ using UnityEngine;
 
 public class DestroyZone : MonoBehaviour
 {
-    // 나와 충돌한 다른 게임 오브젝트는 누구든 파괴해버리겠다.
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Destroy(other.gameObject);
+        // Bullet 컴포넌트가 있는지 확인
+        Bullet bullet = other.GetComponent<Bullet>();
+
+        if (bullet != null)
+        {
+            // 총알을 삭제하지 않고 비활성화
+            bullet.gameObject.SetActive(false);
+        }
     }
 }
