@@ -170,7 +170,7 @@ public class ScoreManager : MonoBehaviour
     private void CheckStage()
     {
         int targetStage =
-            (_currentScore / 1000) + 1;
+            (_currentScore / 2000) + 1;
 
 
         targetStage =

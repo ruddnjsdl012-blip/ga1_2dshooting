@@ -47,7 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377ac04d3e0afef4ab6348543b90fc7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBomb
-  _duration: 0.3
+  _playerBomb: {fileID: 0}
+  _duration: 1
   _bombRadius: 7
 --- !u!212 &7645798446362105527
 SpriteRenderer:
