@@ -48,7 +48,8 @@ public class Bullet : MonoBehaviour
     private void Update()
     {
         transform.Translate(
-            Vector2.up * _speed * Time.deltaTime
+            Vector2.up * _speed * Time.deltaTime,
+            Space.Self
         );
     }
 
@@ -74,10 +75,8 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        // 사운드 재생 속도 설정
         _audioSource.pitch = Random.Range(0.8f, 1.2f);
 
-        // 사운드 재생
         _audioSource.Play();
     }
 
@@ -88,25 +87,19 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // 적 컴포넌트 찾기
         Enemy enemy = collision.gameObject.GetComponent<Enemy>();
 
-
-        // 자식 오브젝트에 Collider2D가 있는 경우
         if (enemy == null)
         {
             enemy = collision.gameObject.GetComponentInParent<Enemy>();
         }
 
-
-        // 적을 찾았다면 대미지
         if (enemy != null)
         {
             enemy.TakeDamage(_damage);
         }
 
-
-        // 총알을 풀로 반환
+        // 풀로 반환
         ReturnToPool();
     }
 
@@ -117,7 +110,6 @@ public class Bullet : MonoBehaviour
 
     private void ReturnToPool()
     {
-        // 총알 비활성화
         gameObject.SetActive(false);
     }
 }
