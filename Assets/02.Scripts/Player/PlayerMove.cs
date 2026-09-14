@@ -13,6 +13,13 @@ public class PlayerMove : MonoBehaviour
 
 
     // =========================================================
+    // Q / E 추가 속도
+    // =========================================================
+
+    private float _speedOffset = 0f;
+
+
+    // =========================================================
     // 이동 범위
     // =========================================================
 
@@ -42,11 +49,34 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
+        // 업그레이드 이동속도 적용
+        ApplyMoveSpeedUpgrade();
+
         // 키보드 수동 이동
         Move();
 
         // Q / E 속도 조절
         SpeedChange();
+    }
+
+
+    // =========================================================
+    // 업그레이드 이동속도 적용
+    // =========================================================
+
+    private void ApplyMoveSpeedUpgrade()
+    {
+        if (UpgradeManager.Instance == null)
+        {
+            return;
+        }
+
+        float upgradeSpeed =
+            UpgradeManager.Instance.GetMoveSpeed();
+
+        _speed =
+            upgradeSpeed +
+            _speedOffset;
     }
 
 
@@ -91,7 +121,8 @@ public class PlayerMove : MonoBehaviour
         // 이동 범위 제한
         // -----------------------------------------
 
-        newPosition = ClampPosition(newPosition);
+        newPosition =
+            ClampPosition(newPosition);
 
         transform.position = newPosition;
     }
@@ -131,7 +162,7 @@ public class PlayerMove : MonoBehaviour
 
 
     // =========================================================
-    // 속도
+    // 속도 확인
     // =========================================================
 
     public float Getspeed()
@@ -140,15 +171,22 @@ public class PlayerMove : MonoBehaviour
     }
 
 
+    // =========================================================
+    // 속도 증가
+    // =========================================================
+
     public void SpeedUp(float upValue)
     {
         if (upValue < 0)
         {
-            Debug.LogWarning("속도 증가량은 0보다 작을 수 없습니다.");
+            Debug.LogWarning(
+                "속도 증가량은 0보다 작을 수 없습니다."
+            );
+
             return;
         }
 
-        _speed += upValue;
+        _speedOffset += upValue;
     }
 
 
@@ -160,15 +198,15 @@ public class PlayerMove : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            _speed++;
+            _speedOffset++;
         }
         else if (Input.GetKeyDown(KeyCode.Q))
         {
-            _speed--;
+            _speedOffset--;
 
-            if (_speed < 0)
+            if (_speedOffset < -5f)
             {
-                _speed = 0;
+                _speedOffset = -5f;
             }
         }
     }

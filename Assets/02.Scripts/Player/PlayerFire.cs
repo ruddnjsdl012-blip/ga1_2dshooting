@@ -10,6 +10,7 @@ public class PlayerFire : MonoBehaviour
     [SerializeField] private GameObject _bulletPrefab;
 
     [SerializeField] private Transform _bulletFirePointLeft;
+
     [SerializeField] private Transform _bulletFirePointRight;
 
 
@@ -21,6 +22,7 @@ public class PlayerFire : MonoBehaviour
     [SerializeField] private GameObject _capsuleBulletPrefab;
 
     [SerializeField] private Transform _capsuleFirePointLeft;
+
     [SerializeField] private Transform _capsuleFirePointRight;
 
 
@@ -42,6 +44,10 @@ public class PlayerFire : MonoBehaviour
 
     private void Update()
     {
+        // 업그레이드 발사속도 적용
+        ApplyFireRateUpgrade();
+
+
         // 자동 공격
         if (_autoAttack)
         {
@@ -51,10 +57,33 @@ public class PlayerFire : MonoBehaviour
             }
         }
 
+
         // 수동 공격
-        if (!_autoAttack && Input.GetKeyDown(KeyCode.Space))
+        if (!_autoAttack &&
+            Input.GetKeyDown(KeyCode.Space))
         {
             Shoot();
+        }
+    }
+
+
+    // =========================
+    // 발사속도 업그레이드 적용
+    // =========================
+
+    private void ApplyFireRateUpgrade()
+    {
+        if (UpgradeManager.Instance == null)
+        {
+            return;
+        }
+
+        _coolTime =
+            UpgradeManager.Instance.GetFireRate();
+
+        if (_coolTime < 0.05f)
+        {
+            _coolTime = 0.05f;
         }
     }
 
@@ -69,7 +98,8 @@ public class PlayerFire : MonoBehaviour
         // 주총알 왼쪽
         // -------------------------
 
-        if (_bulletPrefab != null && _bulletFirePointLeft != null)
+        if (_bulletPrefab != null &&
+            _bulletFirePointLeft != null)
         {
             Instantiate(
                 _bulletPrefab,
@@ -83,7 +113,8 @@ public class PlayerFire : MonoBehaviour
         // 주총알 오른쪽
         // -------------------------
 
-        if (_bulletPrefab != null && _bulletFirePointRight != null)
+        if (_bulletPrefab != null &&
+            _bulletFirePointRight != null)
         {
             Instantiate(
                 _bulletPrefab,
@@ -97,7 +128,8 @@ public class PlayerFire : MonoBehaviour
         // 보조총알 왼쪽
         // -------------------------
 
-        if (_capsuleBulletPrefab != null && _capsuleFirePointLeft != null)
+        if (_capsuleBulletPrefab != null &&
+            _capsuleFirePointLeft != null)
         {
             Instantiate(
                 _capsuleBulletPrefab,
@@ -111,7 +143,8 @@ public class PlayerFire : MonoBehaviour
         // 보조총알 오른쪽
         // -------------------------
 
-        if (_capsuleBulletPrefab != null && _capsuleFirePointRight != null)
+        if (_capsuleBulletPrefab != null &&
+            _capsuleFirePointRight != null)
         {
             Instantiate(
                 _capsuleBulletPrefab,
@@ -124,7 +157,9 @@ public class PlayerFire : MonoBehaviour
         // 마지막 발사 시간 저장
         _lastFireTime = Time.time;
 
-        Debug.Log("주총알 2개 + 보조총알 2개 발사");
+        Debug.Log(
+            "주총알 2개 + 보조총알 2개 발사"
+        );
     }
 
 
@@ -136,7 +171,9 @@ public class PlayerFire : MonoBehaviour
     {
         _autoAttack = auto;
 
-        Debug.Log("자동 공격 : " + _autoAttack);
+        Debug.Log(
+            "자동 공격 : " + _autoAttack
+        );
     }
 
 

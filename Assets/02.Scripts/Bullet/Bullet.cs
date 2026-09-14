@@ -37,7 +37,31 @@ public class Bullet : MonoBehaviour
     {
         Debug.Log("Bullet Enabled");
 
+        ApplyAttackUpgrade();
+
         PlaySound();
+    }
+
+
+    // =========================
+    // 공격력 적용
+    // =========================
+
+    private void ApplyAttackUpgrade()
+    {
+        if (UpgradeManager.Instance == null)
+        {
+            return;
+        }
+
+        _damage =
+            Mathf.RoundToInt(
+                UpgradeManager.Instance.GetAttackPower()
+            );
+
+        Debug.Log(
+            "총알 공격력 적용 : " + _damage
+        );
     }
 
 
@@ -60,6 +84,8 @@ public class Bullet : MonoBehaviour
 
     public void OnSpawn()
     {
+        ApplyAttackUpgrade();
+
         PlaySound();
     }
 
@@ -75,7 +101,8 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        _audioSource.pitch = Random.Range(0.8f, 1.2f);
+        _audioSource.pitch =
+            Random.Range(0.8f, 1.2f);
 
         _audioSource.Play();
     }
@@ -87,11 +114,14 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+        Enemy enemy =
+            collision.gameObject.GetComponent<Enemy>();
 
         if (enemy == null)
         {
-            enemy = collision.gameObject.GetComponentInParent<Enemy>();
+            enemy =
+                collision.gameObject
+                .GetComponentInParent<Enemy>();
         }
 
         if (enemy != null)

@@ -31,7 +31,6 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField] private StageManager _stageManager;
 
-    // 현재 스테이지
     private int _currentStage = 1;
 
 
@@ -44,6 +43,7 @@ public class ScoreManager : MonoBehaviour
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+
             return;
         }
 
@@ -51,10 +51,11 @@ public class ScoreManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
 
-        _bestscore = PlayerPrefs.GetInt(
-            BestScoreKey,
-            0
-        );
+        _bestscore =
+            PlayerPrefs.GetInt(
+                BestScoreKey,
+                0
+            );
     }
 
 
@@ -80,7 +81,6 @@ public class ScoreManager : MonoBehaviour
 
     public void AddScore(int score)
     {
-        // 점수 추가
         _currentScore += score;
 
 
@@ -127,36 +127,66 @@ public class ScoreManager : MonoBehaviour
 
 
     // =========================
+    // 점수 사용
+    // =========================
+
+    public bool UseScore(int cost)
+    {
+        // 점수가 부족하면 사용하지 않는다.
+        if (_currentScore < cost)
+        {
+            Debug.Log(
+                $"점수가 부족합니다. " +
+                $"현재 점수 : {_currentScore} / " +
+                $"필요 점수 : {cost}"
+            );
+
+            return false;
+        }
+
+
+        // 점수 차감
+        _currentScore -= cost;
+
+
+        // UI 갱신
+        Refresh();
+
+
+        Debug.Log(
+            $"점수 사용 : -{cost} / " +
+            $"현재 점수 : {_currentScore}"
+        );
+
+
+        return true;
+    }
+
+
+    // =========================
     // 스테이지 확인
     // =========================
 
     private void CheckStage()
     {
-        // 현재 점수로 몇 번째 스테이지인지 계산한다.
-        //
-        // 0 ~ 999     → Stage 1
-        // 1000 ~ 1999 → Stage 2
-        // 2000 ~ 2999 → Stage 3
-        // 3000 ~ 3999 → Stage 4
-        // 4000 이상   → Stage 5
-
         int targetStage =
             (_currentScore / 1000) + 1;
 
 
-        // Stage 5를 초과하지 않도록 제한
         targetStage =
-            Mathf.Clamp(targetStage, 1, 5);
+            Mathf.Clamp(
+                targetStage,
+                1,
+                5
+            );
 
 
-        // 현재 스테이지와 같으면 아무것도 하지 않는다.
         if (targetStage == _currentStage)
         {
             return;
         }
 
 
-        // 스테이지가 변경되었다.
         _currentStage = targetStage;
 
 
@@ -165,7 +195,6 @@ public class ScoreManager : MonoBehaviour
         );
 
 
-        // StageManager에게 스테이지 전환 요청
         if (_stageManager != null)
         {
             _stageManager.StartStageTransition();
@@ -190,6 +219,7 @@ public class ScoreManager : MonoBehaviour
             _currentScoreTextUI.text =
                 $"Score: {_currentScore}";
         }
+
 
         if (_bestScoreTextUI != null)
         {

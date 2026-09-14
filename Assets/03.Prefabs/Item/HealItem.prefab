@@ -143,4 +143,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   _type: 0
   _value: 0
-  _pickupEffect: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}
+  _rotationSprites:
+  - {fileID: -2421343691936151383, guid: 606e3127513c6c74d852755e18a67337, type: 3}
+  - {fileID: -9075936618163766259, guid: 606e3127513c6c74d852755e18a67337, type: 3}
+  - {fileID: 1013099012324604318, guid: 606e3127513c6c74d852755e18a67337, type: 3}
+  - {fileID: 612596470744354101, guid: 606e3127513c6c74d852755e18a67337, type: 3}
+  _animationSpeed: 0.1

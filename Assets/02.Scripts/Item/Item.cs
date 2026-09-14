@@ -2,64 +2,46 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    // =========================
-    // 아이템 종류
-    // =========================
-
     [SerializeField] private ItemType _type;
-
-
-    // =========================
-    // 아이템 효과 수치
-    // =========================
-
     [SerializeField] private float _value;
 
+    [Header("아이템 회전 이미지 7장")]
+    [SerializeField] private Sprite[] _rotationSprites;
 
-    // =========================
-    // 플레이어에게 이동하기 전 대기 시간
-    // =========================
+    [Header("이미지 변경 속도")]
+    [SerializeField] private float _animationSpeed = 0.1f;
+
+    private float _animationTimer = 0f;
+    private int _currentSpriteIndex = 0;
 
     private const float WaitTime = 2f;
-
     private float _waitTimer = 0f;
-
-
-    // =========================
-    // 플레이어를 따라가는 속도
-    // =========================
 
     private const float MoveSpeed = 5f;
 
-
-    // =========================
-    // 플레이어
-    // =========================
-
     private Player _player = null;
+    private SpriteRenderer _spriteRenderer;
 
-
-    // =========================
-    // 오브젝트가 처음 생성될 때
-    // =========================
 
     private void Awake()
     {
         _player = null;
+
+        _spriteRenderer =
+            GetComponent<SpriteRenderer>();
     }
 
 
-    // =========================
-    // 오브젝트 풀에서 활성화될 때
-    // =========================
-
     private void OnEnable()
     {
-        // 대기 시간 초기화
         _waitTimer = 0f;
 
+        _animationTimer = 0f;
 
-        // 플레이어 찾기
+        _currentSpriteIndex = 0;
+
+        UpdateSprite();
+
         if (_player == null)
         {
             GameObject playerObject =
@@ -74,30 +56,75 @@ public class Item : MonoBehaviour
     }
 
 
-    // =========================
-    // Update
-    // =========================
-
     private void Update()
     {
+        // 7장의 이미지를 순서대로 변경
+        UpdateAnimation();
+
+        // 2초 대기
         _waitTimer += Time.deltaTime;
 
-
-        // 2초 동안 가만히 있음
         if (_waitTimer < WaitTime)
         {
             return;
         }
 
-
-        // 2초가 지나면 플레이어를 따라감
+        // 2초 후 플레이어 추적
         FollowPlayer();
     }
 
 
-    // =========================
-    // 플레이어 따라가기
-    // =========================
+    private void UpdateAnimation()
+    {
+        if (_rotationSprites == null ||
+            _rotationSprites.Length == 0)
+        {
+            return;
+        }
+
+        if (_spriteRenderer == null)
+        {
+            return;
+        }
+
+        _animationTimer += Time.deltaTime;
+
+        if (_animationTimer < _animationSpeed)
+        {
+            return;
+        }
+
+        _animationTimer = 0f;
+
+        _currentSpriteIndex++;
+
+        if (_currentSpriteIndex >=
+            _rotationSprites.Length)
+        {
+            _currentSpriteIndex = 0;
+        }
+
+        UpdateSprite();
+    }
+
+
+    private void UpdateSprite()
+    {
+        if (_rotationSprites == null ||
+            _rotationSprites.Length == 0)
+        {
+            return;
+        }
+
+        if (_spriteRenderer == null)
+        {
+            return;
+        }
+
+        _spriteRenderer.sprite =
+            _rotationSprites[_currentSpriteIndex];
+    }
+
 
     private void FollowPlayer()
     {
@@ -106,70 +133,44 @@ public class Item : MonoBehaviour
             return;
         }
 
-
         Vector3 direction =
             (
                 _player.transform.position
                 - transform.position
             ).normalized;
 
-
-        transform.Translate(
+        transform.position +=
             direction
             * MoveSpeed
-            * Time.deltaTime
-        );
+            * Time.deltaTime;
     }
 
 
-    // =========================
-    // 플레이어와 충돌
-    // =========================
-
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 플레이어가 아니면 무시
         if (!other.CompareTag("Player"))
         {
             return;
         }
 
-
-        // Player 컴포넌트 가져오기
         Player player =
             other.GetComponent<Player>();
-
 
         if (player == null)
         {
             return;
         }
 
-
-        // 아이템 효과 적용
         ApplyItemEffect(player);
-
-
-        // =========================
-        // 오브젝트 풀로 반환
-        // =========================
 
         gameObject.SetActive(false);
     }
 
 
-    // =========================
-    // 아이템 효과 적용
-    // =========================
-
     private void ApplyItemEffect(Player player)
     {
         switch (_type)
         {
-            // =========================
-            // 체력 회복
-            // =========================
-
             case ItemType.Heal:
 
                 player.Heal((int)_value);
@@ -181,24 +182,14 @@ public class Item : MonoBehaviour
                 break;
 
 
-            // =========================
-            // 이동 속도 증가
-            // =========================
-
             case ItemType.MoveSeepUp:
 
                 Debug.Log(
                     $"이동 속도 증가 아이템 획득! +{_value}"
                 );
 
-                // 나중에 Player의 이동 속도 증가 기능 연결
-
                 break;
 
-
-            // =========================
-            // 발사 속도 증가
-            // =========================
 
             case ItemType.FireRateUp:
 
@@ -206,14 +197,8 @@ public class Item : MonoBehaviour
                     $"발사 속도 증가 아이템 획득! +{_value}"
                 );
 
-                // 나중에 PlayerFire의 발사 간격 감소 기능 연결
-
                 break;
 
-
-            // =========================
-            // 예외
-            // =========================
 
             default:
 
