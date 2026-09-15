@@ -86,8 +86,8 @@ public class PlayerMove : MonoBehaviour
 
     private void Move()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        float h = SimpleInput.GetAxisRaw("Horizontal");
+        float v = SimpleInput.GetAxisRaw("Vertical");
 
         Vector2 normalizedDirection =
             new Vector2(h, v).normalized;
