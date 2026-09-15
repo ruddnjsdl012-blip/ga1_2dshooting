@@ -61,8 +61,8 @@ public class UI_Upgrade : MonoBehaviour
         }
 
 
-        _Titletext.text =
-            upgrade.Name;
+        /*_Titletext.text =
+            upgrade.Name;*/
 
 
         _valueText.text =
