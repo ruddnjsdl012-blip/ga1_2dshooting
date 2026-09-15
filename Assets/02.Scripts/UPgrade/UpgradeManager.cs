@@ -6,11 +6,13 @@ public class UpgradeManager : MonoBehaviour
 
     public static UpgradeManager Instance => _instance;
 
-
     private Upgrade _attackUpgrade;
     private Upgrade _moveSpeedUpgrade;
     private Upgrade _fireRateUpgrade;
 
+    private const string AttackLevelKey = "Upgrade_Attack_Level";
+    private const string MoveSpeedLevelKey = "Upgrade_MoveSpeed_Level";
+    private const string FireRateLevelKey = "Upgrade_FireRate_Level";
 
     private void Awake()
     {
@@ -27,7 +29,6 @@ public class UpgradeManager : MonoBehaviour
             return;
         }
 
-
         // =========================
         // 공격력
         // =========================
@@ -42,7 +43,6 @@ public class UpgradeManager : MonoBehaviour
                 1.5f
             );
 
-
         // =========================
         // 이동속도
         // =========================
@@ -56,7 +56,6 @@ public class UpgradeManager : MonoBehaviour
                 100f,
                 1.5f
             );
-
 
         // =========================
         // 발사속도
@@ -73,10 +72,11 @@ public class UpgradeManager : MonoBehaviour
             );
     }
 
-
-    // =========================
-    // 업그레이드 가져오기
-    // =========================
+    private void Start()
+    {
+        Load();
+        RefreshUI();
+    }
 
     public Upgrade GetUpgrade(int index)
     {
@@ -100,97 +100,127 @@ public class UpgradeManager : MonoBehaviour
         }
     }
 
-
-    // =========================
-    // 레벨업
-    // =========================
-
     public bool LevelUp(int index)
     {
         Upgrade upgrade =
             GetUpgrade(index);
-
 
         if (upgrade == null)
         {
             return false;
         }
 
-
-        // =========================
-        // 점수 사용
-        // =========================
-
         bool success =
             ScoreManager.Instance.UseScore(
                 upgrade.Cost
             );
 
-
-        // 점수가 부족하면 레벨업하지 않는다.
         if (success == false)
         {
             return false;
         }
 
-
-        // =========================
-        // 레벨업
-        // =========================
-
         upgrade.LevelUp();
 
+        Save();
+
+        RefreshUI();
 
         Debug.Log(
             $"{upgrade.Name} 업그레이드 성공!"
         );
 
-
         Debug.Log(
             $"현재 레벨 : {upgrade.Level}"
         );
-
 
         Debug.Log(
             $"현재 능력치 : {upgrade.CurrentValue}"
         );
 
-
         Debug.Log(
             $"다음 능력치 : {upgrade.NextValue}"
         );
 
-
         return true;
     }
-
-
-    // =========================
-    // 현재 공격력
-    // =========================
 
     public float GetAttackPower()
     {
         return _attackUpgrade.CurrentValue;
     }
 
-
-    // =========================
-    // 현재 이동속도
-    // =========================
-
     public float GetMoveSpeed()
     {
         return _moveSpeedUpgrade.CurrentValue;
     }
 
-
-    // =========================
-    // 현재 발사속도
-    // =========================
-
     public float GetFireRate()
     {
         return _fireRateUpgrade.CurrentValue;
+    }
+
+    private void Save()
+    {
+        PlayerPrefs.SetInt(
+            AttackLevelKey,
+            _attackUpgrade.Level
+        );
+
+        PlayerPrefs.SetInt(
+            MoveSpeedLevelKey,
+            _moveSpeedUpgrade.Level
+        );
+
+        PlayerPrefs.SetInt(
+            FireRateLevelKey,
+            _fireRateUpgrade.Level
+        );
+
+        PlayerPrefs.Save();
+
+        Debug.Log("업그레이드 데이터 저장 완료");
+    }
+
+    private void Load()
+    {
+        int attackLevel =
+            PlayerPrefs.GetInt(AttackLevelKey, 0);
+
+        int moveSpeedLevel = PlayerPrefs.GetInt(MoveSpeedLevelKey, 0);
+
+        int fireRateLevel = PlayerPrefs.GetInt(FireRateLevelKey, 0);
+
+        _attackUpgrade.SetLevel(attackLevel);
+
+        _moveSpeedUpgrade.SetLevel(moveSpeedLevel);
+
+        _fireRateUpgrade.SetLevel(fireRateLevel);
+
+        Debug.Log($"공격력 레벨 불러오기 : {attackLevel}");
+
+        Debug.Log($"이동속도 레벨 불러오기 : {moveSpeedLevel}");
+
+        Debug.Log($"발사속도 레벨 불러오기 : {fireRateLevel}");
+    }
+
+    private void RefreshUI()
+    {
+        UI_Upgrade[] upgradeUIs =
+            FindObjectsByType<UI_Upgrade>(
+                FindObjectsSortMode.None
+            );
+
+        foreach (UI_Upgrade upgradeUI in upgradeUIs)
+        {
+            if (upgradeUI == null)
+            {
+                continue;
+            }
+
+            upgradeUI.Refresh();
+        }
+
+        Debug.Log($"업그레이드 UI 갱신 완료 : {upgradeUIs.Length}개");
     }
 }

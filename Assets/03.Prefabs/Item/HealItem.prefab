@@ -149,3 +149,4 @@ MonoBehaviour:
   - {fileID: 1013099012324604318, guid: 606e3127513c6c74d852755e18a67337, type: 3}
   - {fileID: 612596470744354101, guid: 606e3127513c6c74d852755e18a67337, type: 3}
   _animationSpeed: 0.1
+  _getEffectPrefab: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}

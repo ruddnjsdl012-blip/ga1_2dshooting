@@ -11,6 +11,9 @@ public class Item : MonoBehaviour
     [Header("이미지 변경 속도")]
     [SerializeField] private float _animationSpeed = 0.1f;
 
+    [Header("아이템 획득 이펙트")]
+    [SerializeField] private GameObject _getEffectPrefab;
+
     private float _animationTimer = 0f;
     private int _currentSpriteIndex = 0;
 
@@ -22,22 +25,17 @@ public class Item : MonoBehaviour
     private Player _player = null;
     private SpriteRenderer _spriteRenderer;
 
-
     private void Awake()
     {
         _player = null;
 
-        _spriteRenderer =
-            GetComponent<SpriteRenderer>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
-
 
     private void OnEnable()
     {
         _waitTimer = 0f;
-
         _animationTimer = 0f;
-
         _currentSpriteIndex = 0;
 
         UpdateSprite();
@@ -55,13 +53,10 @@ public class Item : MonoBehaviour
         }
     }
 
-
     private void Update()
     {
-        // 7장의 이미지를 순서대로 변경
         UpdateAnimation();
 
-        // 2초 대기
         _waitTimer += Time.deltaTime;
 
         if (_waitTimer < WaitTime)
@@ -69,10 +64,8 @@ public class Item : MonoBehaviour
             return;
         }
 
-        // 2초 후 플레이어 추적
         FollowPlayer();
     }
-
 
     private void UpdateAnimation()
     {
@@ -107,7 +100,6 @@ public class Item : MonoBehaviour
         UpdateSprite();
     }
 
-
     private void UpdateSprite()
     {
         if (_rotationSprites == null ||
@@ -124,7 +116,6 @@ public class Item : MonoBehaviour
         _spriteRenderer.sprite =
             _rotationSprites[_currentSpriteIndex];
     }
-
 
     private void FollowPlayer()
     {
@@ -145,7 +136,6 @@ public class Item : MonoBehaviour
             * Time.deltaTime;
     }
 
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player"))
@@ -163,9 +153,17 @@ public class Item : MonoBehaviour
 
         ApplyItemEffect(player);
 
+        if (_getEffectPrefab != null)
+        {
+            Instantiate(
+                _getEffectPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+        }
+
         gameObject.SetActive(false);
     }
-
 
     private void ApplyItemEffect(Player player)
     {
@@ -181,7 +179,6 @@ public class Item : MonoBehaviour
 
                 break;
 
-
             case ItemType.MoveSeepUp:
 
                 Debug.Log(
@@ -190,7 +187,6 @@ public class Item : MonoBehaviour
 
                 break;
 
-
             case ItemType.FireRateUp:
 
                 Debug.Log(
@@ -198,7 +194,6 @@ public class Item : MonoBehaviour
                 );
 
                 break;
-
 
             default:
 

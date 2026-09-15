@@ -132,7 +132,6 @@ public class ScoreManager : MonoBehaviour
 
     public bool UseScore(int cost)
     {
-        // 점수가 부족하면 사용하지 않는다.
         if (_currentScore < cost)
         {
             Debug.Log(
@@ -197,7 +196,9 @@ public class ScoreManager : MonoBehaviour
 
         if (_stageManager != null)
         {
-            _stageManager.StartStageTransition();
+            _stageManager.StartStageTransition(
+                _currentStage
+            );
         }
         else
         {
