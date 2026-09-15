@@ -1,59 +1,138 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StageManager : MonoBehaviour
 {
-    // =========================
-    // 적 스포너
-    // =========================
-
+    [Header("Enemy Spawner")]
     [SerializeField] private EnemySpawner _enemySpawner;
 
-
-    // =========================
-    // 배경
-    // =========================
-
+    [Header("Background Scroller")]
     [SerializeField] private BackgroundScroller _backgroundScroller;
 
-
-    // =========================
-    // 플레이어
-    // =========================
-
+    [Header("Player")]
     [SerializeField] private Player _player;
 
+    [Header("Mission Start Image")]
+    [SerializeField] private Image _missionStartImage;
 
-    // =========================
-    // 스테이지 전환 중인지 여부
-    // =========================
+    [Header("Mission Start 이미지 5개")]
+    [SerializeField] private Sprite[] _missionStartSprites;
 
+    [Header("Mission Start 표시 시간")]
+    [SerializeField] private float _missionDisplayTime = 1f;
+
+    [Header("스테이지 전환 대기 시간")]
+    [SerializeField] private float _backgroundChangeDelay = 0.3f;
+
+    private int _currentStage = 1;
     private bool _isTransitioning = false;
+    private bool _gameStarted = false;
 
+    private void Awake()
+    {
+        HideMissionImage();
+    }
 
-    // =========================
-    // 스테이지 전환 시작
-    // =========================
+    private void Start()
+    {
+        StartCoroutine(StartGameSequence());
+    }
+
+    private IEnumerator StartGameSequence()
+    {
+        _isTransitioning = true;
+
+        // 플레이어를 화면 아래로 이동
+        if (_player != null)
+        {
+            _player.SetStartPositionForStageTransition();
+        }
+
+        // 배경 정지
+        if (_backgroundScroller != null)
+        {
+            _backgroundScroller.StopScroll();
+            _backgroundScroller.ChangeBackground(1);
+        }
+
+        // 적 생성 정지
+        if (_enemySpawner != null)
+        {
+            _enemySpawner.StopSpawn();
+        }
+
+        // MISSION 1 START 표시
+        ShowMissionImage(1);
+
+        Debug.Log(
+            "MISSION 1 START 표시"
+        );
+
+        yield return new WaitForSeconds(
+            _missionDisplayTime
+        );
+
+        // MISSION 1 START 숨김
+        HideMissionImage();
+
+        Debug.Log(
+            "MISSION 1 START 숨김"
+        );
+
+        // 플레이어 등장
+        if (_player != null)
+        {
+            yield return _player.MoveInForStageTransition();
+        }
+
+        // 배경 스크롤 시작
+        if (_backgroundScroller != null)
+        {
+            _backgroundScroller.StartScroll();
+        }
+
+        // 적 생성 시작
+        if (_enemySpawner != null)
+        {
+            _enemySpawner.StartSpawn();
+        }
+
+        _currentStage = 1;
+        _gameStarted = true;
+        _isTransitioning = false;
+
+        Debug.Log(
+            "MISSION 1 시작 완료"
+        );
+    }
 
     public void StartStageTransition(int stage)
     {
-        // 이미 스테이지 전환 중이면
-        // 중복 실행하지 않는다.
         if (_isTransitioning)
         {
             return;
         }
 
+        if (!_gameStarted)
+        {
+            return;
+        }
+
+        if (stage < 1 ||
+            stage > 5)
+        {
+            Debug.LogWarning(
+                $"잘못된 Stage입니다 : {stage}"
+            );
+
+            return;
+        }
 
         StartCoroutine(
             StageTransitionCoroutine(stage)
         );
     }
-
-
-    // =========================
-    // 스테이지 전환 코루틴
-    // =========================
 
     private IEnumerator StageTransitionCoroutine(
         int stage
@@ -61,53 +140,23 @@ public class StageManager : MonoBehaviour
     {
         _isTransitioning = true;
 
-
-        Debug.Log(
-            $"스테이지 전환 시작 : Stage {stage}"
-        );
-
-
-        // =========================
-        // 1. 배경 스크롤 정지
-        // =========================
-
+        // 배경 정지
         if (_backgroundScroller != null)
         {
             _backgroundScroller.StopScroll();
-
-            Debug.Log(
-                "배경 스크롤 정지"
-            );
         }
 
-
-        // =========================
-        // 2. 적 스폰 중지
-        // =========================
-
+        // 적 생성 정지
         if (_enemySpawner != null)
         {
             _enemySpawner.StopSpawn();
-
-            Debug.Log(
-                "EnemySpawner 스폰 중지"
-            );
         }
 
-
-        // =========================
-        // 3. 현재 존재하는 Enemy 찾기
-        // =========================
-
+        // 현재 화면의 모든 적 제거
         Enemy[] enemies =
             FindObjectsByType<Enemy>(
                 FindObjectsSortMode.None
             );
-
-
-        // =========================
-        // 4. 현재 Enemy 제거
-        // =========================
 
         foreach (Enemy enemy in enemies)
         {
@@ -117,117 +166,114 @@ public class StageManager : MonoBehaviour
             }
         }
 
-
-        Debug.Log(
-            $"현재 Enemy {enemies.Length}마리 제거"
-        );
-
-
-        // =========================
-        // 5. 플레이어 화면 위로 이동
-        // =========================
-
+        // 플레이어 화면 위로 이동
         if (_player != null)
         {
-            yield return
-                _player.MoveOutForStageTransition();
-        }
-        else
-        {
-            Debug.LogWarning(
-                "StageManager에 Player가 연결되지 않았습니다."
-            );
+            yield return _player.MoveOutForStageTransition();
         }
 
-
-        // =========================
-        // 6. 잠시 대기
-        // =========================
-
+        // 잠시 대기
         yield return new WaitForSeconds(
-            0.3f
+            _backgroundChangeDelay
         );
 
-
-        // =========================
-        // 7. 배경 변경
-        // =========================
-
+        // 배경 변경
         if (_backgroundScroller != null)
         {
-            _backgroundScroller.ChangeBackground(
-                stage
-            );
-
-            Debug.Log(
-                $"배경 변경 완료 : Stage {stage}"
-            );
-        }
-        else
-        {
-            Debug.LogWarning(
-                "StageManager에 BackgroundScroller가 연결되지 않았습니다."
-            );
+            _backgroundScroller.ChangeBackground(stage);
         }
 
+        // 해당 스테이지 Mission 이미지 표시
+        ShowMissionImage(stage);
 
-        // =========================
-        // 8. 잠시 대기
-        // =========================
-
-        yield return new WaitForSeconds(
-            0.3f
+        Debug.Log(
+            $"MISSION {stage} START 표시"
         );
 
+        yield return new WaitForSeconds(
+            _missionDisplayTime
+        );
 
-        // =========================
-        // 9. 플레이어 화면 아래에서 등장
-        // =========================
+        // Mission 이미지 숨김
+        HideMissionImage();
 
+        Debug.Log(
+            $"MISSION {stage} START 숨김"
+        );
+
+        // 플레이어 화면 아래에서 등장
         if (_player != null)
         {
-            yield return
-                _player.MoveInForStageTransition();
+            yield return _player.MoveInForStageTransition();
         }
 
-
-        // =========================
-        // 10. 배경 스크롤 재개
-        // =========================
-
+        // 배경 스크롤 시작
         if (_backgroundScroller != null)
         {
             _backgroundScroller.StartScroll();
-
-            Debug.Log(
-                "배경 스크롤 재개"
-            );
         }
 
-
-        // =========================
-        // 11. 적 스폰 재개
-        // =========================
-
+        // 적 생성 시작
         if (_enemySpawner != null)
         {
             _enemySpawner.StartSpawn();
-
-            Debug.Log(
-                "EnemySpawner 스폰 재개"
-            );
         }
 
-
-        // =========================
-        // 전환 종료
-        // =========================
-
+        _currentStage = stage;
         _isTransitioning = false;
 
-
         Debug.Log(
-            $"스테이지 전환 완료 : Stage {stage}"
+            $"Stage {stage} 시작 완료"
         );
+    }
+
+    private void ShowMissionImage(int stage)
+    {
+        if (_missionStartImage == null)
+        {
+            Debug.LogError(
+                "Mission Start Image가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        if (_missionStartSprites == null ||
+            _missionStartSprites.Length == 0)
+        {
+            Debug.LogError(
+                "Mission Start 이미지가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        int index =
+            stage - 1;
+
+        if (index < 0 ||
+            index >= _missionStartSprites.Length)
+        {
+            Debug.LogError(
+                $"MISSION {stage} 이미지가 없습니다."
+            );
+
+            return;
+        }
+
+        _missionStartImage.sprite =
+            _missionStartSprites[index];
+
+        _missionStartImage.enabled = true;
+    }
+
+    private void HideMissionImage()
+    {
+        if (_missionStartImage == null)
+        {
+            return;
+        }
+
+        _missionStartImage.enabled = false;
     }
 }

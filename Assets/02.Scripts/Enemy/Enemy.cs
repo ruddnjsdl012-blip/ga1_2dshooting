@@ -7,8 +7,9 @@ public abstract class Enemy : MonoBehaviour
     // 체력
     // =========================
 
-    [SerializeField] private int _health = 100;
+    [SerializeField] private int _baseHealth = 100;
 
+    private int _health;
     private int _maxHealth;
 
 
@@ -54,12 +55,20 @@ public abstract class Enemy : MonoBehaviour
 
     private void Awake()
     {
-        _maxHealth = _health;
+        // 기본 체력을 최대 체력으로 사용
+        _maxHealth = _baseHealth;
 
-        _animator = GetComponent<Animator>();
+        // 처음 체력 설정
+        _health = _baseHealth;
+
+
+        _animator =
+            GetComponent<Animator>();
+
 
         _damagedAudioSource =
             GetComponent<AudioSource>();
+
 
         _spriteRenderer =
             GetComponent<SpriteRenderer>();
@@ -113,6 +122,31 @@ public abstract class Enemy : MonoBehaviour
     private void Update()
     {
         Move();
+    }
+
+
+    // =========================
+    // 체력 밸런스 적용
+    // =========================
+
+    public void SetHealthBalance(float multiplier)
+    {
+        // 잘못된 배율 방지
+        if (multiplier < 1f)
+        {
+            multiplier = 1f;
+        }
+
+
+        // 기본 체력에 배율 적용
+        _maxHealth =
+            Mathf.RoundToInt(
+                _baseHealth * multiplier
+            );
+
+
+        // 현재 체력도 최대 체력으로 설정
+        _health = _maxHealth;
     }
 
 
@@ -206,7 +240,9 @@ public abstract class Enemy : MonoBehaviour
                 _hitSprite != null &&
                 gameObject.activeInHierarchy)
             {
-                StartCoroutine(HitFlash());
+                StartCoroutine(
+                    HitFlash()
+                );
             }
 
             return;
@@ -234,9 +270,12 @@ public abstract class Enemy : MonoBehaviour
         ScoreManager scoreManager =
             GameObject.FindObjectOfType<ScoreManager>();
 
+
         if (scoreManager != null)
         {
-            scoreManager.AddScore(_score);
+            scoreManager.AddScore(
+                _score
+            );
         }
         else
         {
@@ -263,8 +302,6 @@ public abstract class Enemy : MonoBehaviour
         // ---------------------------------
         // 적 비활성화
         // ---------------------------------
-        // Destroy하지 않고 SetActive(false)를 사용하므로
-        // EnemyPool에서 다시 사용할 수 있음
 
         gameObject.SetActive(false);
     }
@@ -416,7 +453,9 @@ public abstract class Enemy : MonoBehaviour
     // 플레이어와 충돌
     // =========================
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(
+        Collider2D other
+    )
     {
         // ---------------------------------
         // 이미 비활성화된 적이면 종료
@@ -460,7 +499,9 @@ public abstract class Enemy : MonoBehaviour
         // 플레이어에게 데미지
         // ---------------------------------
 
-        player.TakeDamage(_damage);
+        player.TakeDamage(
+            _damage
+        );
 
 
         // ---------------------------------

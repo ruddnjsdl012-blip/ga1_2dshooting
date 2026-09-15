@@ -37,33 +37,51 @@ public class Player : MonoBehaviour
     [SerializeField] private BombEffectUI _bombEffectUI;
 
 
-    // =========================
-    // 폭탄 쿨타임
-    // =========================
-
     private const float BombCooldown = 10f;
 
     private float _bombCooldownTimer = 0f;
 
 
     // =========================
-    // 스테이지 전환
+    // 스테이지 전환 속도
     // =========================
 
+    [Header("스테이지 전환 속도")]
     [SerializeField] private float _stageTransitionSpeed = 5f;
 
+
+    // =========================
+    // 원래 플레이어 위치
+    // =========================
+
     private Vector3 _normalPosition;
+
+
+    // =========================
+    // 스테이지 전환 중
+    // =========================
 
     private bool _isStageTransitioning = false;
 
 
     // =========================
-    // 초기화
+    // 전환 전에 켜져 있던 스크립트
+    // =========================
+
+    private MonoBehaviour[] _disabledScripts;
+
+
+    // =========================
+    // Awake
     // =========================
 
     private void Awake()
     {
-        _normalPosition = transform.position;
+        // Inspector에서 배치한
+        // 플레이어의 원래 위치를 기억합니다.
+
+        _normalPosition =
+            transform.position;
     }
 
 
@@ -73,22 +91,27 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        // 스테이지 전환 중이라면
-        // 폭탄 사용을 막는다.
         if (_isStageTransitioning)
         {
             return;
         }
 
 
-        // 폭탄 쿨타임 감소
+        // =========================
+        // 폭탄 쿨타임
+        // =========================
+
         if (_bombCooldownTimer > 0f)
         {
-            _bombCooldownTimer -= Time.deltaTime;
+            _bombCooldownTimer -=
+                Time.deltaTime;
         }
 
 
-        // B키를 누르면 폭탄 사용
+        // =========================
+        // 폭탄
+        // =========================
+
         if (Input.GetKeyDown(KeyCode.B))
         {
             UseBomb();
@@ -97,7 +120,7 @@ public class Player : MonoBehaviour
 
 
     // =========================
-    // 체력
+    // 체력 가져오기
     // =========================
 
     public int GetHealth()
@@ -105,6 +128,10 @@ public class Player : MonoBehaviour
         return _health;
     }
 
+
+    // =========================
+    // 대미지
+    // =========================
 
     public void TakeDamage(int damage)
     {
@@ -121,19 +148,14 @@ public class Player : MonoBehaviour
         _health -= damage;
 
 
-        // =========================
-        // 피격 사운드
-        // =========================
-
-        if (_audioSource != null && _hitSound != null)
+        if (_audioSource != null &&
+            _hitSound != null)
         {
-            _audioSource.PlayOneShot(_hitSound);
+            _audioSource.PlayOneShot(
+                _hitSound
+            );
         }
 
-
-        // =========================
-        // 사망
-        // =========================
 
         if (_health <= 0)
         {
@@ -146,10 +168,15 @@ public class Player : MonoBehaviour
                 );
             }
 
+
             Destroy(gameObject);
         }
     }
 
+
+    // =========================
+    // 회복
+    // =========================
 
     public void Heal(int healAmount)
     {
@@ -168,9 +195,52 @@ public class Player : MonoBehaviour
 
 
     // =========================
-    // 스테이지 전환
+    // 게임 시작 위치
     // =========================
-    // 플레이어를 화면 위쪽으로 이동시킨다.
+
+    public void SetStartPositionForStageTransition()
+    {
+        Camera mainCamera =
+            Camera.main;
+
+
+        if (mainCamera == null)
+        {
+            Debug.LogError(
+                "Main Camera를 찾을 수 없습니다."
+            );
+
+            return;
+        }
+
+
+        // 카메라 화면 아래쪽
+        float bottomY =
+            mainCamera.transform.position.y -
+            mainCamera.orthographicSize;
+
+
+        // 화면보다 5만큼 더 아래
+        bottomY -= 5f;
+
+
+        // 플레이어를 화면 밖으로 이동
+        transform.position =
+            new Vector3(
+                _normalPosition.x,
+                bottomY,
+                _normalPosition.z
+            );
+
+
+        Debug.Log(
+            "플레이어를 화면 아래 밖으로 이동했습니다."
+        );
+    }
+
+
+    // =========================
+    // 플레이어가 화면 위로 나가기
     // =========================
 
     public IEnumerator MoveOutForStageTransition()
@@ -178,11 +248,12 @@ public class Player : MonoBehaviour
         _isStageTransitioning = true;
 
 
-        // =========================
-        // Main Camera 확인
-        // =========================
+        DisablePlayerControl();
 
-        Camera mainCamera = Camera.main;
+
+        Camera mainCamera =
+            Camera.main;
+
 
         if (mainCamera == null)
         {
@@ -190,57 +261,63 @@ public class Player : MonoBehaviour
                 "Main Camera를 찾을 수 없습니다."
             );
 
+
+            EnablePlayerControl();
+
             _isStageTransitioning = false;
 
             yield break;
         }
 
 
-        // =========================
-        // 화면 위쪽 위치
-        // =========================
+        // 화면 위쪽
+        float targetY =
+            mainCamera.transform.position.y +
+            mainCamera.orthographicSize +
+            2f;
 
-        Vector3 topPosition =
-            mainCamera.ViewportToWorldPoint(
-                new Vector3(
-                    0.5f,
-                    1.2f,
-                    Mathf.Abs(
-                        mainCamera.transform.position.z
-                        - transform.position.z
-                    )
-                )
+
+        Vector3 targetPosition =
+            new Vector3(
+                transform.position.x,
+                targetY,
+                transform.position.z
             );
 
 
-        // X 위치는 현재 플레이어 위치 유지
-        topPosition.x =
-            transform.position.x;
-
-
-        // =========================
-        // 플레이어 위로 이동
-        // =========================
-
         yield return MoveToPosition(
-            topPosition
+            targetPosition
+        );
+
+
+        Debug.Log(
+            "플레이어 화면 위쪽 이동 완료"
         );
     }
 
 
     // =========================
-    // 스테이지 전환
-    // =========================
-    // 플레이어를 화면 아래에서 등장시킨다.
+    // 플레이어가 화면 아래에서 들어오기
     // =========================
 
     public IEnumerator MoveInForStageTransition()
     {
-        // =========================
-        // Main Camera 확인
-        // =========================
+        _isStageTransitioning = true;
 
-        Camera mainCamera = Camera.main;
+
+        // =========================================
+        // 중요
+        // =========================================
+        // MoveOutForStageTransition()에서
+        // 이미 플레이어 조작 스크립트를 꺼놓았기 때문에
+        // 여기서 다시 DisablePlayerControl()을 호출하면 안 됩니다.
+        //
+        // 기존에 꺼놓은 스크립트 목록을 그대로 유지합니다.
+
+
+        Camera mainCamera =
+            Camera.main;
+
 
         if (mainCamera == null)
         {
@@ -248,64 +325,67 @@ public class Player : MonoBehaviour
                 "Main Camera를 찾을 수 없습니다."
             );
 
+
+            EnablePlayerControl();
+
             _isStageTransitioning = false;
 
             yield break;
         }
 
 
-        // =========================
-        // 화면 아래쪽 위치
-        // =========================
+        // 화면 아래쪽
+        float bottomY =
+            mainCamera.transform.position.y -
+            mainCamera.orthographicSize;
+
+
+        // 화면 밖으로 5만큼 더 아래
+        bottomY -= 5f;
+
 
         Vector3 bottomPosition =
-            mainCamera.ViewportToWorldPoint(
-                new Vector3(
-                    0.5f,
-                    -0.2f,
-                    Mathf.Abs(
-                        mainCamera.transform.position.z
-                        - transform.position.z
-                    )
-                )
+            new Vector3(
+                _normalPosition.x,
+                bottomY,
+                transform.position.z
             );
 
 
-        // =========================
-        // X 위치
-        // =========================
-
-        bottomPosition.x =
-            _normalPosition.x;
-
-
-        // =========================
-        // 화면 아래로 이동
-        // =========================
-
+        // 플레이어를 화면 아래 밖에 배치
         transform.position =
             bottomPosition;
 
 
-        // =========================
-        // 원래 위치까지 이동
-        // =========================
+        Debug.Log(
+            "플레이어 화면 아래에서 등장 준비"
+        );
 
+
+        // 원래 위치까지 이동
         yield return MoveToPosition(
             _normalPosition
         );
 
 
-        // =========================
-        // 스테이지 전환 종료
-        // =========================
+        // =========================================
+        // 플레이어 조작 재개
+        // =========================================
+
+        EnablePlayerControl();
+
 
         _isStageTransitioning = false;
+
+
+        Debug.Log(
+            "플레이어 화면 아래 등장 완료"
+        );
     }
 
 
     // =========================
-    // 특정 위치까지 이동
+    // 목표 위치까지 이동
     // =========================
 
     private IEnumerator MoveToPosition(
@@ -323,8 +403,8 @@ public class Player : MonoBehaviour
                 Vector3.MoveTowards(
                     transform.position,
                     targetPosition,
-                    _stageTransitionSpeed
-                    * Time.deltaTime
+                    _stageTransitionSpeed *
+                    Time.deltaTime
                 );
 
 
@@ -332,9 +412,109 @@ public class Player : MonoBehaviour
         }
 
 
-        // 오차 보정
         transform.position =
             targetPosition;
+    }
+
+
+    // =========================
+    // 플레이어 조작 정지
+    // =========================
+
+    private void DisablePlayerControl()
+    {
+        // 이미 저장된 스크립트 목록이 있다면
+        // 다시 끄지 않습니다.
+
+        if (_disabledScripts != null)
+        {
+            return;
+        }
+
+
+        MonoBehaviour[] scripts =
+            GetComponents<MonoBehaviour>();
+
+
+        _disabledScripts =
+            new MonoBehaviour[
+                scripts.Length
+            ];
+
+
+        int index = 0;
+
+
+        foreach (MonoBehaviour script in scripts)
+        {
+            if (script == null)
+            {
+                continue;
+            }
+
+
+            if (script == this)
+            {
+                continue;
+            }
+
+
+            if (!script.enabled)
+            {
+                continue;
+            }
+
+
+            script.enabled = false;
+
+
+            _disabledScripts[index] =
+                script;
+
+
+            index++;
+        }
+
+
+        Debug.Log(
+            "스테이지 전환 : 플레이어 조작 정지"
+        );
+    }
+
+
+    // =========================
+    // 플레이어 조작 재개
+    // =========================
+
+    private void EnablePlayerControl()
+    {
+        if (_disabledScripts == null)
+        {
+            return;
+        }
+
+
+        foreach (
+            MonoBehaviour script
+            in _disabledScripts
+        )
+        {
+            if (script == null)
+            {
+                continue;
+            }
+
+
+            script.enabled = true;
+        }
+
+
+        _disabledScripts = null;
+
+
+        Debug.Log(
+            "스테이지 전환 : 플레이어 조작 재개"
+        );
     }
 
 
@@ -344,10 +524,6 @@ public class Player : MonoBehaviour
 
     private void UseBomb()
     {
-        // =========================
-        // 쿨타임 확인
-        // =========================
-
         if (_bombCooldownTimer > 0f)
         {
             Debug.Log(
@@ -359,10 +535,6 @@ public class Player : MonoBehaviour
         }
 
 
-        // =========================
-        // 폭탄 프리팹 확인
-        // =========================
-
         if (_playerBomb == null)
         {
             Debug.LogWarning(
@@ -373,11 +545,9 @@ public class Player : MonoBehaviour
         }
 
 
-        // =========================
-        // 화면 중앙 위치
-        // =========================
+        Camera mainCamera =
+            Camera.main;
 
-        Camera mainCamera = Camera.main;
 
         if (mainCamera == null)
         {
@@ -389,14 +559,15 @@ public class Player : MonoBehaviour
         }
 
 
-        Vector3 screenCenter = new Vector3(
-            0.5f,
-            0.5f,
-            Mathf.Abs(
-                mainCamera.transform.position.z
-                - transform.position.z
-            )
-        );
+        Vector3 screenCenter =
+            new Vector3(
+                0.5f,
+                0.5f,
+                Mathf.Abs(
+                    mainCamera.transform.position.z -
+                    transform.position.z
+                )
+            );
 
 
         Vector3 bombPosition =
@@ -405,20 +576,12 @@ public class Player : MonoBehaviour
             );
 
 
-        // =========================
-        // 폭탄 생성
-        // =========================
-
         Instantiate(
             _playerBomb,
             bombPosition,
             Quaternion.identity
         );
 
-
-        // =========================
-        // 폭탄 UI 실행
-        // =========================
 
         if (_bombEffectUI != null)
         {
@@ -431,10 +594,6 @@ public class Player : MonoBehaviour
             );
         }
 
-
-        // =========================
-        // 쿨타임 시작
-        // =========================
 
         _bombCooldownTimer =
             BombCooldown;

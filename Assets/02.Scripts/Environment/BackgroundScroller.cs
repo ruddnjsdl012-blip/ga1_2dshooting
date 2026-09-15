@@ -2,72 +2,32 @@ using UnityEngine;
 
 public class BackgroundScroller : MonoBehaviour
 {
-    // =========================
-    // 배경 오브젝트 5개
-    // =========================
-
-    [Header("배경 오브젝트 5개")]
-    [SerializeField] private Transform[] _backgrounds;
-
-
-    // =========================
-    // 배경 이동 속도
-    // =========================
+    [Header("스테이지별 배경 2개")]
+    [SerializeField] private BackGroundPair[] _backgroundPairs;
 
     [Header("배경 이동 속도")]
     [SerializeField] private float _moveSpeed = 3f;
 
-
-    // =========================
-    // 현재 스테이지
-    // =========================
-
     private int _currentStage = 1;
-
-
-    // =========================
-    // 배경 스크롤 가능 여부
-    // =========================
-
     private bool _canScroll = true;
-
-
-    // =========================
-    // Awake
-    // =========================
 
     private void Awake()
     {
-        if (_backgrounds == null ||
-            _backgrounds.Length == 0)
+        if (_backgroundPairs == null ||
+            _backgroundPairs.Length == 0)
         {
             Debug.LogError(
-                "Backgrounds 배열에 배경이 연결되지 않았습니다."
+                "Background Pairs 배열에 배경이 연결되지 않았습니다."
             );
 
             return;
         }
-
-
-        Debug.Log(
-            $"BackgroundScroller Awake 실행 : 배경 {_backgrounds.Length}개"
-        );
     }
-
-
-    // =========================
-    // Start
-    // =========================
 
     private void Start()
     {
         ChangeBackground(_currentStage);
     }
-
-
-    // =========================
-    // Update
-    // =========================
 
     private void Update()
     {
@@ -76,221 +36,154 @@ public class BackgroundScroller : MonoBehaviour
             return;
         }
 
+        BackGroundPair currentPair =
+            GetCurrentBackgroundPair();
 
-        // =========================
-        // 현재 스테이지 배경 가져오기
-        // =========================
-
-        Transform currentBackground =
-            GetCurrentBackground();
-
-
-        if (currentBackground == null)
+        if (currentPair == null)
         {
             return;
         }
 
+        Transform backgroundA =
+            currentPair.BackgroundA;
 
-        // =========================
-        // 배경 이동
-        // =========================
+        Transform backgroundB =
+            currentPair.BackgroundB;
 
-        currentBackground.position +=
+        if (backgroundA == null ||
+            backgroundB == null)
+        {
+            return;
+        }
+
+        // 두 배경을 아래로 이동
+        backgroundA.position +=
             Vector3.down *
             _moveSpeed *
             Time.deltaTime;
 
+        backgroundB.position +=
+            Vector3.down *
+            _moveSpeed *
+            Time.deltaTime;
 
-        // =========================
-        // Sprite Renderer 가져오기
-        // =========================
+        // A가 아래로 빠졌는지 확인
+        CheckBackgroundLoop(
+            backgroundA,
+            backgroundB
+        );
 
-        SpriteRenderer spriteRenderer =
+        // B가 아래로 빠졌는지 확인
+        CheckBackgroundLoop(
+            backgroundB,
+            backgroundA
+        );
+    }
+
+    private BackGroundPair GetCurrentBackgroundPair()
+    {
+        int index =
+            _currentStage - 1;
+
+        if (_backgroundPairs == null)
+        {
+            return null;
+        }
+
+        if (index < 0 ||
+            index >= _backgroundPairs.Length)
+        {
+            return null;
+        }
+
+        return _backgroundPairs[index];
+    }
+
+    private void CheckBackgroundLoop(
+        Transform currentBackground,
+        Transform otherBackground
+    )
+    {
+        SpriteRenderer currentRenderer =
             currentBackground.GetComponent<SpriteRenderer>();
 
-
-        if (spriteRenderer == null)
+        if (currentRenderer == null)
         {
             return;
         }
 
-
-        // =========================
-        // 카메라 가져오기
-        // =========================
-
         Camera mainCamera =
             Camera.main;
-
 
         if (mainCamera == null)
         {
             return;
         }
-
-
-        // =========================
-        // 카메라 아래쪽 위치
-        // =========================
 
         float cameraBottom =
             mainCamera.transform.position.y -
             mainCamera.orthographicSize;
 
+        float currentTop =
+            currentRenderer.bounds.max.y;
 
-        // =========================
-        // 배경의 위쪽 위치
-        // =========================
-
-        float backgroundTop =
-            spriteRenderer.bounds.max.y;
-
-
-        // =========================
-        // 배경이 화면 아래로
-        // 완전히 내려갔는지 확인
-        // =========================
-
-        if (backgroundTop <= cameraBottom)
+        if (currentTop <= cameraBottom)
         {
             MoveBackgroundToTop(
-                currentBackground
+                currentBackground,
+                otherBackground
             );
         }
     }
-
-
-    // =========================
-    // 현재 스테이지 배경 가져오기
-    // =========================
-
-    private Transform GetCurrentBackground()
-    {
-        int index =
-            _currentStage - 1;
-
-
-        if (_backgrounds == null)
-        {
-            return null;
-        }
-
-
-        if (index < 0 ||
-            index >= _backgrounds.Length)
-        {
-            return null;
-        }
-
-
-        return _backgrounds[index];
-    }
-
-
-    // =========================
-    // 배경을 화면 위쪽으로 이동
-    // =========================
 
     private void MoveBackgroundToTop(
-        Transform background
+        Transform currentBackground,
+        Transform otherBackground
     )
     {
-        // =========================
-        // Sprite Renderer 가져오기
-        // =========================
+        SpriteRenderer currentRenderer =
+            currentBackground.GetComponent<SpriteRenderer>();
 
-        SpriteRenderer spriteRenderer =
-            background.GetComponent<SpriteRenderer>();
+        SpriteRenderer otherRenderer =
+            otherBackground.GetComponent<SpriteRenderer>();
 
-
-        if (spriteRenderer == null)
+        if (currentRenderer == null ||
+            otherRenderer == null)
         {
             return;
         }
 
+        float otherTop =
+            otherRenderer.bounds.max.y;
 
-        // =========================
-        // 카메라 가져오기
-        // =========================
+        float currentHalfHeight =
+            currentRenderer.bounds.extents.y;
 
-        Camera mainCamera =
-            Camera.main;
-
-
-        if (mainCamera == null)
-        {
-            return;
-        }
-
-
-        // =========================
-        // 카메라 위쪽 위치
-        // =========================
-
-        float cameraTop =
-            mainCamera.transform.position.y +
-            mainCamera.orthographicSize;
-
-
-        // =========================
-        // 배경 실제 높이
-        // =========================
-
-        float backgroundHeight =
-            spriteRenderer.bounds.size.y;
-
-
-        // =========================
-        // 배경을 카메라 위쪽으로 이동
-        // =========================
-
-        float newY =
-            cameraTop +
-            backgroundHeight / 2f;
-
-
-        background.position =
+        currentBackground.position =
             new Vector3(
-                background.position.x,
-                newY,
-                background.position.z
+                otherBackground.position.x,
+                otherTop + currentHalfHeight,
+                currentBackground.position.z
             );
     }
-
-
-    // =========================
-    // 배경 스크롤 정지
-    // =========================
 
     public void StopScroll()
     {
         _canScroll = false;
-
 
         Debug.Log(
             "배경 스크롤 정지"
         );
     }
 
-
-    // =========================
-    // 배경 스크롤 재개
-    // =========================
-
     public void StartScroll()
     {
         _canScroll = true;
-
 
         Debug.Log(
             "배경 스크롤 재개"
         );
     }
-
-
-    // =========================
-    // 배경 변경
-    // =========================
 
     public void ChangeBackground(int stage)
     {
@@ -298,37 +191,18 @@ public class BackgroundScroller : MonoBehaviour
             $"ChangeBackground 호출됨 : Stage {stage}"
         );
 
-
-        // =========================
-        // 배열 확인
-        // =========================
-
-        if (_backgrounds == null)
+        if (_backgroundPairs == null ||
+            _backgroundPairs.Length == 0)
         {
             Debug.LogError(
-                "Backgrounds 배열이 없습니다."
+                "Background Pairs 배열이 없습니다."
             );
 
             return;
         }
-
-
-        if (_backgrounds.Length == 0)
-        {
-            Debug.LogError(
-                "Backgrounds 배열의 크기가 0입니다."
-            );
-
-            return;
-        }
-
-
-        // =========================
-        // 스테이지 번호 확인
-        // =========================
 
         if (stage < 1 ||
-            stage > _backgrounds.Length)
+            stage > _backgroundPairs.Length)
         {
             Debug.LogError(
                 $"잘못된 Stage입니다 : {stage}"
@@ -337,108 +211,130 @@ public class BackgroundScroller : MonoBehaviour
             return;
         }
 
-
-        // =========================
-        // 현재 스테이지 변경
-        // =========================
-
         _currentStage = stage;
 
-
-        // =========================
-        // 배경 활성화 / 비활성화
-        // =========================
+        // =====================================================
+        // 1. 모든 스테이지 배경 끄기
+        // =====================================================
 
         for (int i = 0;
-            i < _backgrounds.Length;
+            i < _backgroundPairs.Length;
             i++)
         {
-            if (_backgrounds[i] == null)
+            BackGroundPair pair =
+                _backgroundPairs[i];
+
+            if (pair == null)
             {
                 continue;
             }
 
-
-            if (i == stage - 1)
+            if (pair.BackgroundA != null)
             {
-                _backgrounds[i].gameObject.SetActive(
-                    true
-                );
+                pair.BackgroundA.gameObject.SetActive(false);
             }
-            else
+
+            if (pair.BackgroundB != null)
             {
-                _backgrounds[i].gameObject.SetActive(
-                    false
-                );
+                pair.BackgroundB.gameObject.SetActive(false);
             }
         }
 
+        // =====================================================
+        // 2. 현재 스테이지 배경 가져오기
+        // =====================================================
 
-        // =========================
-        // 현재 배경 가져오기
-        // =========================
+        BackGroundPair currentPair =
+            _backgroundPairs[stage - 1];
 
-        Transform currentBackground =
-            GetCurrentBackground();
-
-
-        if (currentBackground != null)
+        if (currentPair == null)
         {
-            Camera mainCamera =
-                Camera.main;
+            Debug.LogError(
+                $"Stage {stage}의 BackGroundPair가 없습니다."
+            );
 
-
-            if (mainCamera != null)
-            {
-                SpriteRenderer spriteRenderer =
-                    currentBackground.GetComponent<SpriteRenderer>();
-
-
-                if (spriteRenderer != null)
-                {
-                    // =========================
-                    // 카메라 아래쪽
-                    // =========================
-
-                    float cameraBottom =
-                        mainCamera.transform.position.y -
-                        mainCamera.orthographicSize;
-
-
-                    // =========================
-                    // 카메라 위쪽
-                    // =========================
-
-                    float cameraTop =
-                        mainCamera.transform.position.y +
-                        mainCamera.orthographicSize;
-
-
-                    // =========================
-                    // 카메라 중앙
-                    // =========================
-
-                    float cameraCenter =
-                        (cameraBottom + cameraTop) / 2f;
-
-
-                    // =========================
-                    // 배경을 화면 중앙에 배치
-                    // =========================
-
-                    currentBackground.position =
-                        new Vector3(
-                            currentBackground.position.x,
-                            cameraCenter,
-                            currentBackground.position.z
-                        );
-                }
-            }
+            return;
         }
 
+        if (currentPair.BackgroundA == null ||
+            currentPair.BackgroundB == null)
+        {
+            Debug.LogError(
+                $"Stage {stage}의 배경 A 또는 B가 없습니다."
+            );
+
+            return;
+        }
+
+        // =====================================================
+        // 3. 현재 스테이지 배경만 켜기
+        // =====================================================
+
+        currentPair.BackgroundA.gameObject.SetActive(true);
+        currentPair.BackgroundB.gameObject.SetActive(true);
+
+        SpriteRenderer rendererA =
+            currentPair.BackgroundA.GetComponent<SpriteRenderer>();
+
+        SpriteRenderer rendererB =
+            currentPair.BackgroundB.GetComponent<SpriteRenderer>();
+
+        if (rendererA == null ||
+            rendererB == null)
+        {
+            Debug.LogError(
+                $"Stage {stage} 배경에 Sprite Renderer가 없습니다."
+            );
+
+            return;
+        }
+
+        // =====================================================
+        // 4. A를 카메라 중앙에 배치
+        // =====================================================
+
+        Camera mainCamera =
+            Camera.main;
+
+        if (mainCamera == null)
+        {
+            Debug.LogError(
+                "Main Camera를 찾을 수 없습니다."
+            );
+
+            return;
+        }
+
+        float cameraCenterY =
+            mainCamera.transform.position.y;
+
+        currentPair.BackgroundA.position =
+            new Vector3(
+                currentPair.BackgroundA.position.x,
+                cameraCenterY,
+                currentPair.BackgroundA.position.z
+            );
+
+        // =====================================================
+        // 5. B를 A 바로 위에 붙이기
+        // =====================================================
+
+        float backgroundATop =
+            rendererA.bounds.max.y;
+
+        float backgroundBHalfHeight =
+            rendererB.bounds.extents.y;
+
+        currentPair.BackgroundB.position =
+            new Vector3(
+                currentPair.BackgroundA.position.x,
+                backgroundATop +
+                backgroundBHalfHeight,
+                currentPair.BackgroundB.position.z
+            );
 
         Debug.Log(
-            $"배경 변경 완료 : Stage {stage}"
+            $"Stage {stage} 배경 변경 완료"
         );
     }
 }

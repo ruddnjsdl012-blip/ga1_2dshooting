@@ -16,8 +16,7 @@ public class EnemySpawner : MonoBehaviour
     // 적 생성 데이터
     // =========================
 
-    [SerializeField]
-    private EnemySpawnDataTableSO _spawnDataTable;
+    [SerializeField] private EnemySpawnDataTableSO _spawnDataTable;
 
 
     // =========================
@@ -175,6 +174,31 @@ public class EnemySpawner : MonoBehaviour
 
 
                 // =========================
+                // 체력 밸런스 적용
+                // =========================
+
+                Enemy enemyComponent =
+                    enemy.GetComponent<Enemy>();
+
+
+                if (enemyComponent != null)
+                {
+                    float healthMultiplier =
+                        GetHealthMultiplier();
+
+                    enemyComponent.SetHealthBalance(
+                        healthMultiplier
+                    );
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"{enemy.name}에서 Enemy 컴포넌트를 찾을 수 없습니다."
+                    );
+                }
+
+
+                // =========================
                 // 적 활성화
                 // =========================
 
@@ -210,5 +234,30 @@ public class EnemySpawner : MonoBehaviour
 
         // 스폰 재개 후 바로 생성되지 않도록 초기화
         _timer = 0f;
+    }
+
+
+    // =========================
+    // 적 체력 배율
+    // =========================
+
+    public float GetHealthMultiplier()
+    {
+        if (ScoreManager.Instance == null)
+        {
+            return 1f;
+        }
+
+
+        int bestScore =
+            ScoreManager.Instance.Bestscore;
+
+
+        // 최고 점수 1000점마다 체력 1단계 증가
+        float multiplier =
+            1f + (bestScore / 1000f);
+
+
+        return multiplier;
     }
 }

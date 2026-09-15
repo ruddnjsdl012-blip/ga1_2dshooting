@@ -162,20 +162,11 @@ public class UpgradeManager : MonoBehaviour
 
     private void Save()
     {
-        PlayerPrefs.SetInt(
-            AttackLevelKey,
-            _attackUpgrade.Level
-        );
+        PlayerPrefs.SetInt(AttackLevelKey, _attackUpgrade.Level);
 
-        PlayerPrefs.SetInt(
-            MoveSpeedLevelKey,
-            _moveSpeedUpgrade.Level
-        );
+        PlayerPrefs.SetInt(MoveSpeedLevelKey, _moveSpeedUpgrade.Level);
 
-        PlayerPrefs.SetInt(
-            FireRateLevelKey,
-            _fireRateUpgrade.Level
-        );
+        PlayerPrefs.SetInt(FireRateLevelKey, _fireRateUpgrade.Level);
 
         PlayerPrefs.Save();
 
